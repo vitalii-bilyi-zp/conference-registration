@@ -8,9 +8,17 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+use App\Models\Country;
+
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    const ACCESS_TOKEN = 'access_token';
+
+    const ADMIN_TYPE = 'admin';
+    const LISTENER_TYPE = 'listener';
+    const ANNOUNCER_TYPE = 'announcer';
 
     /**
      * The attributes that are mass assignable.
@@ -18,7 +26,12 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'firstname',
+        'lastname',
+        'type',
+        'birthdate',
+        'country_id',
+        'phone',
         'email',
         'password',
     ];
@@ -40,5 +53,11 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'birthdate' => 'date'
     ];
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
 }
