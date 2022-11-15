@@ -31,6 +31,7 @@ class Index extends FormRequest
     public function all($keys = null)
     {
         $data = parent::all($keys);
+
         return array_merge($data, $this->route()->parameters());
     }
 }

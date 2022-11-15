@@ -4,6 +4,8 @@ namespace App\Http\Requests\Conference;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+use App\Models\User;
+
 class Store extends FormRequest
 {
     /**
@@ -13,7 +15,7 @@ class Store extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return $this->user()->can('store', User::class);
     }
 
     /**

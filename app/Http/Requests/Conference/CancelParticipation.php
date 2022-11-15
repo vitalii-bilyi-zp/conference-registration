@@ -4,6 +4,8 @@ namespace App\Http\Requests\Conference;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+use App\Models\User;
+
 class CancelParticipation extends FormRequest
 {
     /**
@@ -13,9 +15,7 @@ class CancelParticipation extends FormRequest
      */
     public function authorize()
     {
-        $conference = $this->route('conference');
-
-        return $conference && $conference->isUserAttached($this->user());
+        return $this->conference && $this->user()->can('cancelParticipation', [User::class, $this->conference]);
     }
 
     /**

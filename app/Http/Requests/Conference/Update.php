@@ -4,6 +4,8 @@ namespace App\Http\Requests\Conference;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+use App\Models\User;
+
 class Update extends FormRequest
 {
     /**
@@ -13,7 +15,7 @@ class Update extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return $this->user()->can('update', User::class);
     }
 
     /**

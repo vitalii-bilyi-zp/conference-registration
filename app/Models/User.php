@@ -60,4 +60,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Country::class);
     }
+
+    public function isAdmin()
+    {
+        return $this->type === User::ADMIN_TYPE;
+    }
 }
