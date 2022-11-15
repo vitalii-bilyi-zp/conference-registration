@@ -9,6 +9,8 @@ use App\Http\Requests\Conference\Store as ConferenceStore;
 use App\Http\Requests\Conference\Show as ConferenceShow;
 use App\Http\Requests\Conference\Update as ConferenceUpdate;
 use App\Http\Requests\Conference\Destroy as ConferenceDestroy;
+use App\Http\Requests\Conference\Participate as ConferenceParticipate;
+use App\Http\Requests\Conference\CancelParticipation as ConferenceCancelParticipation;
 
 use App\Models\Conference;
 
@@ -60,6 +62,22 @@ class ConferenceController extends Controller
     public function destroy(ConferenceDestroy $request, Conference $conference): JsonResponse
     {
         $conference->delete();
+
+        return $this->respondWithSuccess();
+    }
+
+    public function participate(ConferenceParticipate $request, Conference $conference): JsonResponse
+    {
+        $user = $request->user();
+        $conference->users()->attach($user->id);
+
+        return $this->respondWithSuccess();
+    }
+
+    public function cancelParticipation(ConferenceCancelParticipation $request, Conference $conference): JsonResponse
+    {
+        $user = $request->user();
+        $conference->users()->detach($user->id);
 
         return $this->respondWithSuccess();
     }
