@@ -32,7 +32,7 @@ class Register extends FormRequest
             'type' => [
                 'required',
                 'string',
-                Rule::in([User::ADMIN_TYPE, User::LISTENER_TYPE, User::ANNOUNCER_TYPE]),
+                Rule::in([User::LISTENER_TYPE, User::ANNOUNCER_TYPE]),
             ],
             'birthdate' => 'required|date',
             'country_id' => 'required|integer|exists:countries,id',
