@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ConferenceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,8 +19,15 @@ use App\Http\Controllers\Api\AuthController;
 
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
-
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/auth/user', [AuthController::class, 'user']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+});
+
+Route::get('/conferences', [ConferenceController::class, 'index']);
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::post('/conferences', [ConferenceController::class, 'store']);
+    Route::get('/conferences/{conference}', [ConferenceController::class, 'show']);
+    Route::put('/conferences/{conference}', [ConferenceController::class, 'update']);
+    Route::delete('/conferences/{conference}', [ConferenceController::class, 'destroy']);
 });
