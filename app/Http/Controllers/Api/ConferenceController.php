@@ -13,6 +13,7 @@ use App\Http\Requests\Conference\Participate as ConferenceParticipate;
 use App\Http\Requests\Conference\CancelParticipation as ConferenceCancelParticipation;
 
 use App\Models\Conference;
+use App\Models\Country;
 
 use F9Web\ApiResponseHelpers;
 use Illuminate\Http\JsonResponse;
@@ -23,7 +24,7 @@ class ConferenceController extends Controller
 
     public function index(ConferenceIndex $request): JsonResponse
     {
-        $conferences = Conference::paginate(15);
+        $conferences = Conference::with('country')->paginate(15);
 
         return $this->setDefaultSuccessResponse([])->respondWithSuccess($conferences);
     }
@@ -43,6 +44,10 @@ class ConferenceController extends Controller
 
     public function show(ConferenceShow $request, Conference $conference): JsonResponse
     {
+        if (isset($conference->country_id)) {
+            $conference->country = Country::find($conference->country_id);
+        }
+
         return $this->setDefaultSuccessResponse([])->respondWithSuccess($conference);
     }
 

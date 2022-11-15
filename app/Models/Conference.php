@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\User;
+use App\Models\Country;
 
 class Conference extends Model
 {
@@ -42,6 +43,11 @@ class Conference extends Model
     public function users()
     {
         return $this->belongsToMany(User::class);
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
     }
 
     public function isUserAttached(User $user)
