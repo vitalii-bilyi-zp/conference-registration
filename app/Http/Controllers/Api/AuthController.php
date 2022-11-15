@@ -69,6 +69,10 @@ class AuthController extends Controller
 
     private function respondWithToken(Authenticatable $user, $token): JsonResponse
     {
+        $conference_ids = $user->conferences->map(function ($item) {
+            return $item->id;
+        });
+
         return $this->setDefaultSuccessResponse([])->respondWithSuccess([
             'user' => [
                 'id' => $user->id,
@@ -80,6 +84,7 @@ class AuthController extends Controller
                 'phone' => $user->phone,
                 'email' => $user->email,
                 'email_verified_at' => $user->email_verified_at,
+                'conference_ids' => $conference_ids,
                 'access_token' => $token,
                 'token_type' => 'Bearer',
             ]

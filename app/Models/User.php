@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+use App\Models\Conference;
 use App\Models\Country;
 
 class User extends Authenticatable
@@ -55,6 +56,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'birthdate' => 'date'
     ];
+
+    public function conferences()
+    {
+        return $this->belongsToMany(Conference::class);
+    }
 
     public function country()
     {
