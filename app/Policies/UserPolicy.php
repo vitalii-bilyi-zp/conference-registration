@@ -4,6 +4,8 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Models\Conference;
+use App\Models\Lecture;
+
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserPolicy
@@ -35,8 +37,27 @@ class UserPolicy
         return $conference->isUserAttached($user);
     }
 
-    public function storeLecturesRecord(User $user, Conference $conference)
+    public function lecturesStore(User $user, $conferenceId)
     {
-        return $user->isAnnouncer() && !$conference->isUserAttached($user);
+        if (!$user->isAnnouncer()) {
+            return false;
+        }
+
+        $existingLecture = Lecture::where([
+            ['user_id', '=', $user->id],
+            ['conference_id', '=', $conferenceId],
+        ])->first();
+
+        return !isset($existingLecture);
+    }
+
+    public function lecturesUpdate(User $user, Lecture $lecture)
+    {
+        return $user->id === $lecture->user_id;
+    }
+
+    public function lecturesDestroy(User $user, Lecture $lecture)
+    {
+        return $user->id === $lecture->user_id;
     }
 }

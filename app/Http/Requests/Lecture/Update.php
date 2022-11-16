@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Conference;
+namespace App\Http\Requests\Lecture;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 use App\Models\User;
 
-class StoreLecturesRecord extends FormRequest
+class Update extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +15,7 @@ class StoreLecturesRecord extends FormRequest
      */
     public function authorize()
     {
-        return $this->conference && $this->user()->can('storeLecturesRecord', [User::class, $this->conference]);
+        return $this->lecture && $this->user()->can('lecturesUpdate', [User::class, $this->lecture]);
     }
 
     /**
@@ -26,10 +26,10 @@ class StoreLecturesRecord extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|string|min:2|max:255',
+            'title' => 'nullable|string|min:2|max:255',
             'description' => 'nullable|string|max:1000',
-            'lecture_start' => 'required|date_format:Y-m-d H:i:s|before:lecture_end',
-            'lecture_end' => 'required|date_format:Y-m-d H:i:s',
+            'lecture_start' => 'required_with:lecture_end|date_format:Y-m-d H:i:s|before:lecture_end',
+            'lecture_end' => 'required_with:lecture_start|date_format:Y-m-d H:i:s',
             'presentation' => 'nullable|file|mimes:ppt,pptx|max:10000',
         ];
     }

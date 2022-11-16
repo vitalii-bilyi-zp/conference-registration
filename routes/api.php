@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ConferenceController;
+use App\Http\Controllers\Api\LectureController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +33,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::delete('/conferences/{conference}', [ConferenceController::class, 'destroy']);
     Route::post('/conferences/{conference}/participate', [ConferenceController::class, 'participate']);
     Route::post('/conferences/{conference}/cancel-participation', [ConferenceController::class, 'cancelParticipation']);
+});
 
-    Route::post('/conferences/{conference}/lectures', [ConferenceController::class, 'storeLecturesRecord']);
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/lectures', [LectureController::class, 'index']);
+    Route::post('/lectures', [LectureController::class, 'store']);
+    Route::get('/lectures/{lecture}', [LectureController::class, 'show']);
+    Route::put('/lectures/{lecture}', [LectureController::class, 'update']);
+    Route::delete('/lectures/{lecture}', [LectureController::class, 'destroy']);
 });
