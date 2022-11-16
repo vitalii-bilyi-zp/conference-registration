@@ -11,6 +11,7 @@ use App\Http\Requests\Conference\Update as ConferenceUpdate;
 use App\Http\Requests\Conference\Destroy as ConferenceDestroy;
 use App\Http\Requests\Conference\Participate as ConferenceParticipate;
 use App\Http\Requests\Conference\CancelParticipation as ConferenceCancelParticipation;
+use App\Http\Requests\Conference\StoreLecturesRecord as ConferenceStoreLecturesRecord;
 
 use App\Models\Conference;
 use App\Models\Country;
@@ -18,9 +19,18 @@ use App\Models\Country;
 use F9Web\ApiResponseHelpers;
 use Illuminate\Http\JsonResponse;
 
+use App\Services\LectureService;
+
 class ConferenceController extends Controller
 {
     use ApiResponseHelpers;
+
+    protected $lectureService;
+
+    public function __construct(LectureService $lectureService)
+    {
+        $this->lectureService = $lectureService;
+    }
 
     public function index(ConferenceIndex $request): JsonResponse
     {
@@ -83,6 +93,25 @@ class ConferenceController extends Controller
     {
         $user = $request->user();
         $conference->users()->detach($user->id);
+
+        return $this->respondWithSuccess();
+    }
+
+    public function storeLecturesRecord(ConferenceStoreLecturesRecord $request): JsonResponse
+    {
+        $hashFileName = null;
+        $originalFileName = null;
+        $presentation = $request->file('presentation');
+
+        if (isset($presentation)) {
+            $hashFileName = $this->lectureService->savePresentation($presentation);
+
+            if (isset($hashFileName)) {
+                $originalFileName = $presentation->getClientOriginalName();
+            }
+        }
+
+        info($hashFileName . ' / ' . $originalFileName);
 
         return $this->respondWithSuccess();
     }

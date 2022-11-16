@@ -32,4 +32,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::delete('/conferences/{conference}', [ConferenceController::class, 'destroy']);
     Route::post('/conferences/{conference}/participate', [ConferenceController::class, 'participate']);
     Route::post('/conferences/{conference}/cancel-participation', [ConferenceController::class, 'cancelParticipation']);
+
+    Route::post('/conferences/{conference}/lectures', [ConferenceController::class, 'storeLecturesRecord']);
 });
