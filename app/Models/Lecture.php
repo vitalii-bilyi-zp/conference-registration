@@ -22,6 +22,7 @@ class Lecture extends Model
         'hash_file_name',
         'original_file_name',
         'conference_id',
+        'user_id',
     ];
 
     /**

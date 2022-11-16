@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('hash_file_name')->nullable();
             $table->string('original_file_name')->nullable();
             $table->bigInteger('conference_id')->unsigned()->index();
+            $table->bigInteger('user_id')->unsigned()->index();
             $table->timestamps();
         });
     }

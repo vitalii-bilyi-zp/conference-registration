@@ -19,6 +19,11 @@ return new class extends Migration
                 ->on('conferences')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
         });
     }
 
@@ -31,6 +36,7 @@ return new class extends Migration
     {
         Schema::table('lectures', function (Blueprint $table) {
             $table->dropForeign(['conference_id']);
+            $table->dropForeign(['user_id']);
         });
     }
 };

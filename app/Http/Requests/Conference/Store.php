@@ -27,7 +27,7 @@ class Store extends FormRequest
     {
         return [
             'title' => 'required|string|min:2|max:255',
-            'date' => 'required|date',
+            'date' => 'required|date_format:Y-m-d',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
             'country_id' => 'required|integer|exists:countries,id',

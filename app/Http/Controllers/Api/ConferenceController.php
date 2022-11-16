@@ -15,6 +15,7 @@ use App\Http\Requests\Conference\StoreLecturesRecord as ConferenceStoreLecturesR
 
 use App\Models\Conference;
 use App\Models\Country;
+use App\Models\Lecture;
 
 use F9Web\ApiResponseHelpers;
 use Illuminate\Http\JsonResponse;
@@ -97,8 +98,10 @@ class ConferenceController extends Controller
         return $this->respondWithSuccess();
     }
 
-    public function storeLecturesRecord(ConferenceStoreLecturesRecord $request): JsonResponse
+    public function storeLecturesRecord(ConferenceStoreLecturesRecord $request, Conference $conference): JsonResponse
     {
+        $user = $request->user();
+
         $hashFileName = null;
         $originalFileName = null;
         $presentation = $request->file('presentation');
@@ -111,7 +114,18 @@ class ConferenceController extends Controller
             }
         }
 
-        info($hashFileName . ' / ' . $originalFileName);
+        Lecture::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'lecture_start' => $request->lecture_start,
+            'lecture_end' => $request->lecture_end,
+            'hash_file_name' => $hashFileName,
+            'original_file_name' => $originalFileName,
+            'conference_id' => $conference->id,
+            'user_id' => $user->id,
+        ]);
+
+        $conference->users()->attach($user->id);
 
         return $this->respondWithSuccess();
     }

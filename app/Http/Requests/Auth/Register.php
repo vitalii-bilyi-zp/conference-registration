@@ -34,7 +34,7 @@ class Register extends FormRequest
                 'string',
                 Rule::in([User::LISTENER_TYPE, User::ANNOUNCER_TYPE]),
             ],
-            'birthdate' => 'required|date',
+            'birthdate' => 'required|date_format:Y-m-d',
             'country_id' => 'required|integer|exists:countries,id',
             'phone' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users|max:255',

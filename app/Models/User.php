@@ -71,4 +71,14 @@ class User extends Authenticatable
     {
         return $this->type === User::ADMIN_TYPE;
     }
+
+    public function isListener()
+    {
+        return $this->type === User::LISTENER_TYPE;
+    }
+
+    public function isAnnouncer()
+    {
+        return $this->type === User::ANNOUNCER_TYPE;
+    }
 }

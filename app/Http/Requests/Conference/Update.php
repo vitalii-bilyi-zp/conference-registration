@@ -27,7 +27,7 @@ class Update extends FormRequest
     {
         return [
             'title' => 'nullable|string|min:2|max:255',
-            'date' => 'nullable|date',
+            'date' => 'nullable|date_format:Y-m-d',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'country_id' => 'nullable|integer|exists:countries,id',

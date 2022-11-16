@@ -12,17 +12,17 @@ class UserPolicy
 
     public function store(User $user)
     {
-        return $user->isAdmin();
+        return false;
     }
 
     public function update(User $user)
     {
-        return $user->isAdmin();
+        return false;
     }
 
     public function destroy(User $user)
     {
-        return $user->isAdmin();
+        return false;
     }
 
     public function participate(User $user, Conference $conference)
@@ -33,5 +33,10 @@ class UserPolicy
     public function cancelParticipation(User $user, Conference $conference)
     {
         return $conference->isUserAttached($user);
+    }
+
+    public function storeLecturesRecord(User $user, Conference $conference)
+    {
+        return $user->isAnnouncer() && !$conference->isUserAttached($user);
     }
 }
