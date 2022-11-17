@@ -4,14 +4,13 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Storage;
 
+use App\Models\Lecture;
 use App\Models\Conference;
 
 use Carbon\Carbon;
 
 class LectureService
 {
-    const MAX_DURATION = 60;
-
     public function validateLectureTime($conferenceId, $lectureStart, $lectureEnd)
     {
         $conference = Conference::find($conferenceId);
@@ -21,7 +20,10 @@ class LectureService
             $error = $this->validateLectureEnd($conference, $lectureEnd);
         }
         if (!isset($error)) {
-            $error = $this->validateLectureDuration($lectureStart, $lectureEnd);
+            $error = $this->validateLectureMinDuration($lectureStart, $lectureEnd);
+        }
+        if (!isset($error)) {
+            $error = $this->validateLectureMaxDuration($lectureStart, $lectureEnd);
         }
         if (!isset($error)) {
             $error = $this->validateLectureTimeConflicts($conference, $lectureStart, $lectureEnd);
@@ -68,14 +70,28 @@ class LectureService
         return null;
     }
 
-    private function validateLectureDuration($lectureStart, $lectureEnd)
+    private function validateLectureMinDuration($lectureStart, $lectureEnd)
     {
         $lectureDuration = $this->getLectureDuration($lectureStart, $lectureEnd);
 
-        if ($lectureDuration > LectureService::MAX_DURATION) {
+        if ($lectureDuration < Lecture::MIN_DURATION) {
             return [
                 'field' => 'lecture_start',
-                'message' => trans('validation.lecture_duration', ['duration' => LectureService::MAX_DURATION . ' minutes'])
+                'message' => trans('validation.lecture_min_duration', ['duration' => Lecture::MIN_DURATION . ' minutes'])
+            ];
+        }
+
+        return null;
+    }
+
+    private function validateLectureMaxDuration($lectureStart, $lectureEnd)
+    {
+        $lectureDuration = $this->getLectureDuration($lectureStart, $lectureEnd);
+
+        if ($lectureDuration > Lecture::MAX_DURATION) {
+            return [
+                'field' => 'lecture_start',
+                'message' => trans('validation.lecture_max_duration', ['duration' => Lecture::MAX_DURATION . ' minutes'])
             ];
         }
 

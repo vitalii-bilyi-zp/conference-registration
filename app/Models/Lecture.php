@@ -9,6 +9,9 @@ class Lecture extends Model
 {
     use HasFactory;
 
+    const MIN_DURATION = 5;
+    const MAX_DURATION = 60;
+
     /**
      * The attributes that are mass assignable.
      *
