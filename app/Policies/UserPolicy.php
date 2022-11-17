@@ -5,8 +5,11 @@ namespace App\Policies;
 use App\Models\User;
 use App\Models\Conference;
 use App\Models\Lecture;
+use App\Models\Comment;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
+
+use Carbon\Carbon;
 
 class UserPolicy
 {
@@ -59,5 +62,18 @@ class UserPolicy
     public function lecturesDestroy(User $user, Lecture $lecture)
     {
         return $user->id === $lecture->user_id;
+    }
+
+    public function commentsUpdate(User $user, Comment $comment)
+    {
+        if ($user->id !== $comment->user_id) {
+            return false;
+        }
+
+        $now = Carbon::now();
+        $updatedAtDate = Carbon::createFromFormat('Y-m-d H:i:s', $comment->updated_at);
+        $timeSinceLastUpdate = $now->diffInMinutes($updatedAtDate);
+
+        return $timeSinceLastUpdate < Comment::UPDATE_GAP;
     }
 }
