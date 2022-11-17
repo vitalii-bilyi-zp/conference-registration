@@ -3,11 +3,21 @@
 namespace App\Http\Requests\Lecture;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 use App\Models\User;
 
+use App\Services\LectureService;
+
 class Update extends FormRequest
 {
+    protected $lectureService;
+
+    public function __construct(LectureService $lectureService, ...$args) {
+        parent::__construct(...$args);
+        $this->lectureService = $lectureService;
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -32,5 +42,32 @@ class Update extends FormRequest
             'lecture_end' => 'required_with:lecture_start|date_format:Y-m-d H:i:s',
             'presentation' => 'nullable|file|mimes:ppt,pptx|max:10000',
         ];
+    }
+
+    /**
+     * @param \Illuminate\Validation\Validator $validator
+     * @return void
+     */
+    public function withValidator(Validator $validator)
+    {
+        if (!isset($this->lecture_start) || !isset($this->lecture_end)) {
+            return;
+        }
+
+        $validator->after(
+            function ($validator) {
+                $error = $this->lectureService->validateLectureTime(
+                    $this->lecture->conference_id,
+                    $this->lecture_start,
+                    $this->lecture_end
+                );
+
+                if (!isset($error)) {
+                    return;
+                }
+
+                $validator->errors()->add($error['field'], $error['message']);
+            }
+        );
     }
 }

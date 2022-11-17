@@ -52,14 +52,12 @@ class Store extends FormRequest
      */
     public function withValidator(Validator $validator)
     {
-
         $validator->after(
             function ($validator) {
-                $attributes = $validator->getData();
                 $error = $this->lectureService->validateLectureTime(
-                    $attributes['conference_id'],
-                    $attributes['lecture_start'],
-                    $attributes['lecture_end']
+                    $this->conference_id,
+                    $this->lecture_start,
+                    $this->lecture_end
                 );
 
                 if (!isset($error)) {
