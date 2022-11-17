@@ -35,6 +35,10 @@ class ConferenceController extends Controller
     public function index(ConferenceIndex $request): JsonResponse
     {
         $conferences = Conference::with('country')->paginate(15);
+        $conferences = $conferences->getCollection()->transform(function ($value) {
+            $value->has_free_time = $this->lectureService->checkConferenceFreeTime($value, Lecture::MIN_DURATION);
+            return $value;
+        });
 
         return $this->setDefaultSuccessResponse([])->respondWithSuccess($conferences);
     }

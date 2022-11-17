@@ -189,6 +189,16 @@ class LectureService
         return null;
     }
 
+    public function checkConferenceFreeTime(Conference $conference, $lectureDuration)
+    {
+        $conferenceDate = Carbon::parse($conference->date)->format('Y-m-d');
+        $conferenceStart = $conferenceDate . ' ' . $conference->day_start;
+        $conferenceEnd = $conferenceDate . ' ' . $conference->day_end;
+        $possibleLectureStart = $this->findPossibleLectureTime($conference, $conferenceStart, $conferenceEnd, $lectureDuration);
+
+        return isset($possibleLectureStart);
+    }
+
     public function storePresentation($file)
     {
         $hashFileName = null;
