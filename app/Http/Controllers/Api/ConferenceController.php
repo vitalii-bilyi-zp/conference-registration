@@ -14,13 +14,23 @@ use App\Http\Requests\Conference\CancelParticipation as ConferenceCancelParticip
 
 use App\Models\Conference;
 use App\Models\Country;
+use App\Models\Lecture;
 
 use F9Web\ApiResponseHelpers;
 use Illuminate\Http\JsonResponse;
 
+use App\Services\LectureService;
+
 class ConferenceController extends Controller
 {
     use ApiResponseHelpers;
+
+    protected $lectureService;
+
+    public function __construct(LectureService $lectureService)
+    {
+        $this->lectureService = $lectureService;
+    }
 
     public function index(ConferenceIndex $request): JsonResponse
     {
@@ -83,6 +93,25 @@ class ConferenceController extends Controller
     {
         $user = $request->user();
         $conference->users()->detach($user->id);
+
+        if (!$user->isAnnouncer()) {
+            return $this->respondWithSuccess();
+        }
+
+        $existingLecture = Lecture::where([
+            ['user_id', '=', $user->id],
+            ['conference_id', '=', $conference->id],
+        ])->first();
+
+        if (isset($existingLecture)) {
+            $hashFileName = $existingLecture->hash_file_name;
+
+            if (isset($hashFileName)) {
+                $this->lectureService->deletePresentation($hashFileName);
+            }
+
+            $existingLecture->delete();
+        }
 
         return $this->respondWithSuccess();
     }
