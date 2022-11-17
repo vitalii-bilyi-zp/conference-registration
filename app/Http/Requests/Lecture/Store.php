@@ -3,12 +3,22 @@
 namespace App\Http\Requests\Lecture;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 use App\Models\User;
 use App\Models\Conference;
 
+use App\Services\LectureService;
+
 class Store extends FormRequest
 {
+    protected $lectureService;
+
+    public function __construct(LectureService $lectureService, ...$args) {
+        parent::__construct(...$args);
+        $this->lectureService = $lectureService;
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -34,5 +44,30 @@ class Store extends FormRequest
             'presentation' => 'nullable|file|mimes:ppt,pptx|max:10000',
             'conference_id' => 'required|integer|exists:conferences,id',
         ];
+    }
+
+    /**
+     * @param \Illuminate\Validation\Validator $validator
+     * @return void
+     */
+    public function withValidator(Validator $validator)
+    {
+
+        $validator->after(
+            function ($validator) {
+                $attributes = $validator->getData();
+                $error = $this->lectureService->validateLectureTime(
+                    $attributes['conference_id'],
+                    $attributes['lecture_start'],
+                    $attributes['lecture_end']
+                );
+
+                if (!isset($error)) {
+                    return;
+                }
+
+                $validator->errors()->add($error['field'], $error['message']);
+            }
+        );
     }
 }

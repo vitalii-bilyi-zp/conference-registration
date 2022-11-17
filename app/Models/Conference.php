@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 use App\Models\User;
 use App\Models\Country;
+use App\Models\Lecture;
 
 class Conference extends Model
 {
@@ -51,6 +52,11 @@ class Conference extends Model
     public function country()
     {
         return $this->belongsTo(Country::class);
+    }
+
+    public function lectures()
+    {
+        return $this->hasMany(Lecture::class);
     }
 
     public function isUserAttached(User $user)
