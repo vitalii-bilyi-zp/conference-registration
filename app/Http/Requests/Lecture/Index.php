@@ -26,6 +26,7 @@ class Index extends FormRequest
         return [
             'page' => 'nullable|integer|min:1',
             'conference_id' => 'nullable|integer|exists:conferences,id',
+            'category_id' => 'nullable|integer|exists:categories,id',
         ];
     }
 

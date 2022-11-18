@@ -12,22 +12,26 @@ use App\Http\Requests\Lecture\Destroy as LectureDestroy;
 
 use App\Models\Lecture;
 use App\Models\Conference;
+use App\Models\Category;
 
 use F9Web\ApiResponseHelpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\Builder;
 
 use App\Services\LectureService;
+use App\Services\CategoryService;
 
 class LectureController extends Controller
 {
     use ApiResponseHelpers;
 
     protected $lectureService;
+    protected $categoryService;
 
-    public function __construct(LectureService $lectureService)
+    public function __construct(LectureService $lectureService, CategoryService $categoryService)
     {
         $this->lectureService = $lectureService;
+        $this->categoryService = $categoryService;
     }
 
     public function index(LectureIndex $request): JsonResponse
@@ -35,6 +39,11 @@ class LectureController extends Controller
         $lectures = Lecture::query()
             ->when($request->get('conference_id'), function(Builder $query) use (&$request) {
                 $query->where('conference_id', '=', $request->get('conference_id'));
+            })
+            ->when($request->get('category_id'), function(Builder $query) use (&$request) {
+                $category = Category::find($request->get('category_id'));
+                $allowedCategoryIds = $this->categoryService->getSubcategoryIdsRecursively($category);
+                $query->whereIn('category_id', $allowedCategoryIds);
             })
             ->paginate(15);
         $lectures = $lectures->getCollection()->transform(function ($value) {

@@ -15,26 +15,37 @@ use App\Http\Requests\Conference\CancelParticipation as ConferenceCancelParticip
 use App\Models\Conference;
 use App\Models\Country;
 use App\Models\Lecture;
+use App\Models\Category;
 
 use F9Web\ApiResponseHelpers;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Database\Eloquent\Builder;
 
 use App\Services\LectureService;
+use App\Services\CategoryService;
 
 class ConferenceController extends Controller
 {
     use ApiResponseHelpers;
 
     protected $lectureService;
+    protected $categoryService;
 
-    public function __construct(LectureService $lectureService)
+    public function __construct(LectureService $lectureService, CategoryService $categoryService)
     {
         $this->lectureService = $lectureService;
+        $this->categoryService = $categoryService;
     }
 
     public function index(ConferenceIndex $request): JsonResponse
     {
-        $conferences = Conference::with('country')->paginate(15);
+        $conferences = Conference::with('country')
+            ->when($request->get('category_id'), function(Builder $query) use (&$request) {
+                $category = Category::find($request->get('category_id'));
+                $allowedCategoryIds = $this->categoryService->getSubcategoryIdsRecursively($category);
+                $query->whereIn('category_id', $allowedCategoryIds);
+            })
+            ->paginate(15);
         $conferences = $conferences->getCollection()->transform(function ($value) {
             $value->has_free_time = $this->lectureService->checkConferenceFreeTime($value, Lecture::MIN_DURATION);
             return $value;
