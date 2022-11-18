@@ -15,9 +15,18 @@ use App\Models\Category;
 use F9Web\ApiResponseHelpers;
 use Illuminate\Http\JsonResponse;
 
+use App\Services\CategoryService;
+
 class CategoryController extends Controller
 {
     use ApiResponseHelpers;
+
+    protected $categoryService;
+
+    public function __construct(CategoryService $categoryService)
+    {
+        $this->categoryService = $categoryService;
+    }
 
     public function index(CategoryIndex $request): JsonResponse
     {
@@ -25,7 +34,7 @@ class CategoryController extends Controller
             ->whereNull('category_id')
             ->get();
         $categories = $categories->transform(function ($value) {
-            return $this->appendSubcategoriesRecursively($value);
+            return $this->categoryService->appendSubcategoriesRecursively($value);
         });
 
         return $this->setDefaultSuccessResponse([])->respondWithSuccess($categories);
@@ -43,7 +52,7 @@ class CategoryController extends Controller
 
     public function show(CategoryShow $request, Category $category): JsonResponse
     {
-        $this->appendSubcategoriesRecursively($category);
+        $this->categoryService->appendSubcategoriesRecursively($category);
 
         return $this->setDefaultSuccessResponse([])->respondWithSuccess($category);
     }
@@ -63,14 +72,5 @@ class CategoryController extends Controller
         $category->delete();
 
         return $this->respondWithSuccess();
-    }
-
-    private function appendSubcategoriesRecursively(Category $category)
-    {
-        $category->subcategories->each(function ($item) {
-            $this->appendSubcategoriesRecursively($item);
-        });
-
-        return $category;
     }
 }

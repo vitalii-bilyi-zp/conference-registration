@@ -41,6 +41,7 @@ class Update extends FormRequest
             'lecture_start' => 'required_with:lecture_end|date_format:Y-m-d H:i:s|before:lecture_end',
             'lecture_end' => 'required_with:lecture_start|date_format:Y-m-d H:i:s',
             'presentation' => 'nullable|file|mimes:ppt,pptx|max:10000',
+            'category_id' => 'nullable|integer|exists:categories,id',
         ];
     }
 
@@ -50,17 +51,24 @@ class Update extends FormRequest
      */
     public function withValidator(Validator $validator)
     {
-        if (!isset($this->lecture_start) || !isset($this->lecture_end)) {
-            return;
-        }
-
         $validator->after(
             function ($validator) {
-                $error = $this->lectureService->validateLectureTime(
-                    $this->lecture->conference_id,
-                    $this->lecture_start,
-                    $this->lecture_end
-                );
+                $error = null;
+
+                if (isset($this->lecture_start) && isset($this->lecture_end)) {
+                    $error = $this->lectureService->validateLectureTime(
+                        $this->lecture->conference_id,
+                        $this->lecture_start,
+                        $this->lecture_end
+                    );
+                }
+
+                if (!isset($error) && isset($this->category_id)) {
+                    $error = $this->lectureService->validateCategoryId(
+                        $this->lecture->conference_id,
+                        $this->category_id
+                    );
+                }
 
                 if (!isset($error)) {
                     return;

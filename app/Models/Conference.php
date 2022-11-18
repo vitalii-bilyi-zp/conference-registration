@@ -24,6 +24,7 @@ class Conference extends Model
         'latitude',
         'longitude',
         'country_id',
+        'category_id',
     ];
 
     /**

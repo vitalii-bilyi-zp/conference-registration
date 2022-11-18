@@ -74,6 +74,7 @@ class LectureController extends Controller
             'original_file_name' => $originalFileName,
             'conference_id' => $request->conference_id,
             'user_id' => $user->id,
+            'category_id' => $request->category_id,
         ]);
 
         $conference->users()->attach($user->id);
@@ -118,6 +119,7 @@ class LectureController extends Controller
             'lecture_end' => $request->lecture_end ?? $lecture->lecture_end,
             'hash_file_name' => $hashFileName,
             'original_file_name' => $originalFileName,
+            'category_id' => $request->category_id ?? $lecture->category_id,
         ]);
 
         return $this->respondWithSuccess();

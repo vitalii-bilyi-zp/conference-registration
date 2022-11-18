@@ -181,5 +181,6 @@ return [
     'lecture_end_time' => 'The lecture should end between :start_date - :end_date.',
     'lecture_min_duration' => 'The duration of the lecture should not be less than :duration.',
     'lecture_max_duration' => 'The duration of the lecture should not exceed :duration.',
-    'lecture_time_conflicts' => 'The specified time is already taken, the closest possible lecture start is :possible_lecture_start.',
+    'lecture_time_conflicts' => 'The selected time is already taken, the closest possible lecture start is :possible_lecture_start.',
+    'lecture_category_id' => 'The selected category id is not allowed.',
 ];

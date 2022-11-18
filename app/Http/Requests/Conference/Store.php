@@ -31,6 +31,7 @@ class Store extends FormRequest
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
             'country_id' => 'required|integer|exists:countries,id',
+            'category_id' => 'nullable|integer|exists:categories,id',
         ];
     }
 }

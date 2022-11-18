@@ -31,6 +31,7 @@ class Update extends FormRequest
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'country_id' => 'nullable|integer|exists:countries,id',
+            'category_id' => 'nullable|integer|exists:categories,id',
         ];
     }
 }

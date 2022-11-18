@@ -51,6 +51,7 @@ class ConferenceController extends Controller
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
             'country_id' => $request->country_id,
+            'category_id' => $request->category_id,
         ]);
 
         return $this->respondWithSuccess();
@@ -69,13 +70,22 @@ class ConferenceController extends Controller
 
     public function update(ConferenceUpdate $request, Conference $conference): JsonResponse
     {
+        $originalCategoryId = $conference->category_id;
+
         $conference->update([
             'title' => $request->title ?? $conference->title,
             'date' => $request->date ?? $conference->date,
             'latitude' => $request->latitude ?? $conference->latitude,
             'longitude' => $request->longitude ?? $conference->longitude,
             'country_id' => $request->country_id ?? $conference->country_id,
+            'category_id' => $request->category_id ?? $conference->category_id,
         ]);
+
+        if (isset($request->category_id) && $request->category_id !== $originalCategoryId) {
+            $conference->lectures()->update([
+                'category_id' => null
+            ]);
+        }
 
         return $this->respondWithSuccess();
     }

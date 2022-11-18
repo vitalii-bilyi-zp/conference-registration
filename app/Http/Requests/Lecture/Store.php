@@ -43,6 +43,7 @@ class Store extends FormRequest
             'lecture_end' => 'required|date_format:Y-m-d H:i:s',
             'presentation' => 'nullable|file|mimes:ppt,pptx|max:10000',
             'conference_id' => 'required|integer|exists:conferences,id',
+            'category_id' => 'nullable|integer|exists:categories,id',
         ];
     }
 
@@ -59,6 +60,13 @@ class Store extends FormRequest
                     $this->lecture_start,
                     $this->lecture_end
                 );
+
+                if (!isset($error) && isset($this->category_id)) {
+                    $error = $this->lectureService->validateCategoryId(
+                        $this->conference_id,
+                        $this->category_id
+                    );
+                }
 
                 if (!isset($error)) {
                     return;

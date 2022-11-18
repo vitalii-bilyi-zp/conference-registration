@@ -6,11 +6,40 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Models\Lecture;
 use App\Models\Conference;
+use App\Models\Category;
+
+use App\Services\CategoryService;
 
 use Carbon\Carbon;
 
 class LectureService
 {
+    protected $categoryService;
+
+    public function __construct(CategoryService $categoryService)
+    {
+        $this->categoryService = $categoryService;
+    }
+
+    public function validateCategoryId($conferenceId, $categoryId)
+    {
+        $conference = Conference::find($conferenceId);
+        if (!isset($conference->category_id)) {
+            return null;
+        }
+
+        $category = Category::find($conference->category_id);
+        $allowedCategoryIds = $this->categoryService->getSubcategoryIdsRecursively($category);
+        if (in_array($categoryId, $allowedCategoryIds)) {
+            return null;
+        }
+
+        return [
+            'field' => 'category_id',
+            'message' => trans('validation.lecture_category_id')
+        ];
+    }
+
     public function validateLectureTime($conferenceId, $lectureStart, $lectureEnd)
     {
         $conference = Conference::find($conferenceId);
