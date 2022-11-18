@@ -21,6 +21,9 @@
     },
     {
       "name": "Comments"
+    },
+    {
+      "name": "Categories"
     }
   ],
   "paths": {
@@ -157,6 +160,13 @@
             "schema": {
               "type": "integer",
               "minimum": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "category_id",
+            "schema": {
+              "type": "integer"
             }
           }
         ],
@@ -421,8 +431,14 @@
             "in": "query",
             "name": "conference_id",
             "schema": {
-              "type": "integer",
-              "minimum": 1
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category_id",
+            "schema": {
+              "type": "integer"
             }
           }
         ],
@@ -732,6 +748,185 @@
           }
         ]
       }
+    },
+    "/categories": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "",
+        "description": "",
+        "operationId": "categoriesIndex",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoriesIndexResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "(Admin only)",
+        "description": "",
+        "operationId": "categoriesStore",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoriesStoreDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/categories/{id}": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "",
+        "description": "",
+        "operationId": "categoriesShow",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "(Admin only)",
+        "description": "",
+        "operationId": "categoriesUpdate",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoriesUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Categories"
+        ],
+        "summary": "(Admin only)",
+        "description": "",
+        "operationId": "categoriesDelete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -938,6 +1133,30 @@
           }
         }
       },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Category name"
+          },
+          "category_id": {
+            "type": "integer",
+            "example": 1,
+            "nullable": true
+          },
+          "subcategories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Category"
+            }
+          }
+        }
+      },
       "RegisterDto": {
         "type": "object",
         "properties": {
@@ -1031,6 +1250,10 @@
           "country_id": {
             "type": "integer",
             "example": 1
+          },
+          "category_id": {
+            "type": "integer",
+            "example": 1
           }
         },
         "required": [
@@ -1065,6 +1288,10 @@
           "country_id": {
             "type": "integer",
             "example": 1
+          },
+          "category_id": {
+            "type": "integer",
+            "example": 1
           }
         }
       },
@@ -1091,6 +1318,10 @@
             "format": "binary"
           },
           "conference_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "category_id": {
             "type": "integer",
             "example": 1
           }
@@ -1123,6 +1354,10 @@
           "presentation": {
             "type": "string",
             "format": "binary"
+          },
+          "category_id": {
+            "type": "integer",
+            "example": 1
           }
         }
       },
@@ -1152,6 +1387,35 @@
         "required": [
           "content"
         ]
+      },
+      "CategoriesStoreDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Category name"
+          },
+          "category_id": {
+            "type": "integer",
+            "example": 1
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "CategoriesUpdateDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Category name"
+          },
+          "category_id": {
+            "type": "integer",
+            "example": 1
+          }
+        }
       },
       "UserResponse": {
         "type": "object",
@@ -1249,6 +1513,12 @@
             "type": "integer",
             "example": 1
           }
+        }
+      },
+      "CategoriesIndexResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Category"
         }
       }
     },
