@@ -87,6 +87,8 @@ class LectureController extends Controller
             $lecture->file_path = $this->lectureService->getPresentationPath($lecture->hash_file_name);
         }
 
+        $lecture->conference = $lecture->conference;
+
         return $this->setDefaultSuccessResponse([])->respondWithSuccess($lecture);
     }
 

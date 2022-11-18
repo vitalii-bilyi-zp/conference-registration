@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\Comment;
+use App\Models\Conference;
 
 class Lecture extends Model
 {
@@ -48,6 +49,11 @@ class Lecture extends Model
         'lecture_start' => 'datetime',
         'lecture_end' => 'datetime',
     ];
+
+    public function conference()
+    {
+        return $this->belongsTo(Conference::class);
+    }
 
     public function comments()
     {
