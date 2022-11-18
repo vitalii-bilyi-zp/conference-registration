@@ -25,6 +25,14 @@ class CommentController extends Controller
                 $query->where('lecture_id', '=', $request->get('lecture_id'));
             })
             ->paginate(15);
+        $comments = $comments->getCollection()->transform(function ($value) {
+            $commentAuthor = $value->user;
+            $value->user_firstname = $commentAuthor->firstname;
+            $value->user_lastname = $commentAuthor->lastname;
+            unset($value->user);
+
+            return $value;
+        });
 
         return $this->setDefaultSuccessResponse([])->respondWithSuccess($comments);
     }

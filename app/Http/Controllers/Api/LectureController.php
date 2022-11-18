@@ -40,6 +40,7 @@ class LectureController extends Controller
         $lectures = $lectures->getCollection()->transform(function ($value) {
             $value->comments_count = count($value->comments);
             unset($value->comments);
+
             return $value;
         });
 
