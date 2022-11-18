@@ -76,4 +76,19 @@ class UserPolicy
 
         return $timeSinceLastUpdate < Comment::UPDATE_GAP;
     }
+
+    public function categoriesStore(User $user)
+    {
+        return false;
+    }
+
+    public function categoriesUpdate(User $user)
+    {
+        return false;
+    }
+
+    public function categoriesDestroy(User $user)
+    {
+        return false;
+    }
 }

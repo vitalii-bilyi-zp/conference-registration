@@ -36,4 +36,9 @@ class Category extends Model
     protected $casts = [
 
     ];
+
+    public function subcategories()
+    {
+        return $this->hasMany(Category::class);
+    }
 }
