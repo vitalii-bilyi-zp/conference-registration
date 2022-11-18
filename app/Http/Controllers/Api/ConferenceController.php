@@ -62,6 +62,8 @@ class ConferenceController extends Controller
             $conference->country = Country::find($conference->country_id);
         }
 
+        $conference->has_free_time = $this->lectureService->checkConferenceFreeTime($conference, Lecture::MIN_DURATION);
+
         return $this->setDefaultSuccessResponse([])->respondWithSuccess($conference);
     }
 
