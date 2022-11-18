@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\Comment;
+
 class Lecture extends Model
 {
     use HasFactory;
@@ -46,4 +48,9 @@ class Lecture extends Model
         'lecture_start' => 'datetime',
         'lecture_end' => 'datetime',
     ];
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }

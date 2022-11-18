@@ -37,6 +37,11 @@ class LectureController extends Controller
                 $query->where('conference_id', '=', $request->get('conference_id'));
             })
             ->paginate(15);
+        $lectures = $lectures->getCollection()->transform(function ($value) {
+            $value->comments_count = count($value->comments);
+            unset($value->comments);
+            return $value;
+        });
 
         return $this->setDefaultSuccessResponse([])->respondWithSuccess($lectures);
     }
