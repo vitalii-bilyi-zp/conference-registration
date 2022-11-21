@@ -9,6 +9,8 @@ use App\Http\Requests\Lecture\Store as LectureStore;
 use App\Http\Requests\Lecture\Show as LectureShow;
 use App\Http\Requests\Lecture\Update as LectureUpdate;
 use App\Http\Requests\Lecture\Destroy as LectureDestroy;
+use App\Http\Requests\Lecture\ToFavorites as LectureToFavorites;
+use App\Http\Requests\Lecture\RemoveFromFavorites as LectureRemoveFromFavorites;
 
 use App\Models\Lecture;
 use App\Models\Conference;
@@ -46,7 +48,10 @@ class LectureController extends Controller
                 $query->whereIn('category_id', $allowedCategoryIds);
             })
             ->paginate(15);
-        $lectures = $lectures->getCollection()->transform(function ($value) {
+
+        $user = $request->user();
+        $lectures = $lectures->getCollection()->transform(function ($value) use (&$user) {
+            $value->in_favorites = $user->inFavoriteLectures($value->id);
             $value->comments_count = count($value->comments);
             unset($value->comments);
 
@@ -97,6 +102,8 @@ class LectureController extends Controller
             $lecture->file_path = $this->lectureService->getPresentationPath($lecture->hash_file_name);
         }
 
+        $user = $request->user();
+        $lecture->in_favorites = $user->inFavoriteLectures($lecture->id);
         $lecture->conference = $lecture->conference;
 
         return $this->setDefaultSuccessResponse([])->respondWithSuccess($lecture);
@@ -147,6 +154,22 @@ class LectureController extends Controller
         $user = $request->user();
         $conference = Conference::find($lecture->conference_id);
         $conference->users()->detach($user->id);
+
+        return $this->respondWithSuccess();
+    }
+
+    public function toFavorites(LectureToFavorites $request, Lecture $lecture): JsonResponse
+    {
+        $user = $request->user();
+        $user->favoriteLectures()->attach($lecture->id);
+
+        return $this->respondWithSuccess();
+    }
+
+    public function removeFromFavorites(LectureRemoveFromFavorites $request, Lecture $lecture): JsonResponse
+    {
+        $user = $request->user();
+        $user->favoriteLectures()->detach($lecture->id);
 
         return $this->respondWithSuccess();
     }

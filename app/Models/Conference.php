@@ -45,11 +45,6 @@ class Conference extends Model
         'date' => 'date'
     ];
 
-    public function users()
-    {
-        return $this->belongsToMany(User::class);
-    }
-
     public function country()
     {
         return $this->belongsTo(Country::class);
@@ -60,8 +55,13 @@ class Conference extends Model
         return $this->hasMany(Lecture::class);
     }
 
-    public function isUserAttached(User $user)
+    public function users()
     {
-        return $this->users->contains($user);
+        return $this->belongsToMany(User::class);
+    }
+
+    public function isUserAttached($userId)
+    {
+        return $this->users->contains($userId);
     }
 }

@@ -657,6 +657,80 @@
         ]
       }
     },
+    "/lectures/{id}/to-favorites": {
+      "post": {
+        "tags": [
+          "Lectures"
+        ],
+        "summary": "",
+        "description": "",
+        "operationId": "toFavorites",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/lectures/{id}/remove-from-favorites": {
+      "post": {
+        "tags": [
+          "Lectures"
+        ],
+        "summary": "",
+        "description": "",
+        "operationId": "removeFromFavorites",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/comments": {
       "get": {
         "tags": [

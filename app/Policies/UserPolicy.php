@@ -32,12 +32,12 @@ class UserPolicy
 
     public function conferencesParticipate(User $user, Conference $conference)
     {
-        return !$conference->isUserAttached($user);
+        return !$conference->isUserAttached($user->id);
     }
 
     public function conferencesCancelParticipation(User $user, Conference $conference)
     {
-        return $conference->isUserAttached($user);
+        return $conference->isUserAttached($user->id);
     }
 
     public function lecturesStore(User $user, $conferenceId)
@@ -62,6 +62,16 @@ class UserPolicy
     public function lecturesDestroy(User $user, Lecture $lecture)
     {
         return $user->id === $lecture->user_id;
+    }
+
+    public function lecturesToFavorites(User $user, Lecture $lecture)
+    {
+        return !$user->inFavoriteLectures($lecture->id);
+    }
+
+    public function lecturesRemoveFromFavorites(User $user, Lecture $lecture)
+    {
+        return $user->inFavoriteLectures($lecture->id);
     }
 
     public function commentsUpdate(User $user, Comment $comment)

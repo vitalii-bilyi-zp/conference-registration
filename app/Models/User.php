@@ -10,6 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 use App\Models\Conference;
 use App\Models\Country;
+use App\Models\Lecture;
 
 class User extends Authenticatable
 {
@@ -65,6 +66,16 @@ class User extends Authenticatable
     public function country()
     {
         return $this->belongsTo(Country::class);
+    }
+
+    public function favoriteLectures()
+    {
+        return $this->belongsToMany(Lecture::class);
+    }
+
+    public function inFavoriteLectures($lectureId)
+    {
+        return $this->favoriteLectures->contains($lectureId);
     }
 
     public function isAdmin()

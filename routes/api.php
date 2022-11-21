@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\CategoryController;
 |
 */
 
+// auth
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
@@ -28,6 +29,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 });
 
+// conferences
 Route::get('/conferences', [ConferenceController::class, 'index']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/conferences', [ConferenceController::class, 'store']);
@@ -38,20 +40,25 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/conferences/{conference}/cancel-participation', [ConferenceController::class, 'cancelParticipation']);
 });
 
+// lectures
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/lectures', [LectureController::class, 'index']);
     Route::post('/lectures', [LectureController::class, 'store']);
     Route::get('/lectures/{lecture}', [LectureController::class, 'show']);
     Route::put('/lectures/{lecture}', [LectureController::class, 'update']);
     Route::delete('/lectures/{lecture}', [LectureController::class, 'destroy']);
+    Route::post('/lectures/{lecture}/to-favorites', [LectureController::class, 'toFavorites']);
+    Route::post('/lectures/{lecture}/remove-from-favorites', [LectureController::class, 'removeFromFavorites']);
 });
 
+// comments
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/comments', [CommentController::class, 'index']);
     Route::post('/comments', [CommentController::class, 'store']);
     Route::put('/comments/{comment}', [CommentController::class, 'update']);
 });
 
+// categories
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::post('/categories', [CategoryController::class, 'store']);
