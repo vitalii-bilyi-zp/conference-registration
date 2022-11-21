@@ -43,9 +43,11 @@ class LectureController extends Controller
                 $query->where('conference_id', '=', $request->get('conference_id'));
             })
             ->when($request->get('category_id'), function(Builder $query) use (&$request) {
-                $category = Category::find($request->get('category_id'));
-                $allowedCategoryIds = $this->categoryService->getSubcategoryIdsRecursively($category);
-                $query->whereIn('category_id', $allowedCategoryIds);
+                // $category = Category::find($request->get('category_id'));
+                // $allowedCategoryIds = $this->categoryService->getSubcategoryIdsRecursively($category);
+                // $query->whereIn('category_id', $allowedCategoryIds);
+
+                $query->where('category_id', '=', $request->get('category_id'));
             })
             ->paginate(15);
 

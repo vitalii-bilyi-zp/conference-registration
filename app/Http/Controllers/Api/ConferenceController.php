@@ -41,9 +41,11 @@ class ConferenceController extends Controller
     {
         $conferences = Conference::with('country')
             ->when($request->get('category_id'), function(Builder $query) use (&$request) {
-                $category = Category::find($request->get('category_id'));
-                $allowedCategoryIds = $this->categoryService->getSubcategoryIdsRecursively($category);
-                $query->whereIn('category_id', $allowedCategoryIds);
+                // $category = Category::find($request->get('category_id'));
+                // $allowedCategoryIds = $this->categoryService->getSubcategoryIdsRecursively($category);
+                // $query->whereIn('category_id', $allowedCategoryIds);
+
+                $query->where('category_id', '=', $request->get('category_id'));
             })
             ->paginate(15);
         $conferences = $conferences->getCollection()->transform(function ($value) {
