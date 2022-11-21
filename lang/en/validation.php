@@ -183,4 +183,14 @@ return [
     'lecture_max_duration' => 'The duration of the lecture should not exceed :duration.',
     'lecture_time_conflicts' => 'The selected time is already taken, the closest possible lecture start is :possible_lecture_start.',
     'lecture_category_id' => 'The selected category id is not allowed.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Validation Messages For "User" entity
+    |--------------------------------------------------------------------------
+    */
+
+    'user_unique_email' => 'The email has already been taken.',
+    'user_old_password' => 'Old password doesn\'t match.',
+    'user_new_password' => 'New password shouldn\'t be same as old password.',
 ];

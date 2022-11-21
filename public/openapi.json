@@ -116,6 +116,41 @@
             "bearerAuth": []
           }
         ]
+      },
+      "put": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "",
+        "description": "",
+        "operationId": "updateUser",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/auth/logout": {
@@ -1207,6 +1242,45 @@
           "email",
           "password"
         ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "firstname": {
+            "type": "string",
+            "example": "John"
+          },
+          "lastname": {
+            "type": "string",
+            "example": "James"
+          },
+          "birthdate": {
+            "type": "string",
+            "format": "date"
+          },
+          "country_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "phone": {
+            "type": "string",
+            "example": "+1 (555) 555-5555"
+          },
+          "email": {
+            "type": "string",
+            "example": "user+1@groupbwt.com"
+          },
+          "old_password": {
+            "type": "string",
+            "example": "12345678",
+            "minLength": 8
+          },
+          "new_password": {
+            "type": "string",
+            "example": "qwerty123456",
+            "minLength": 8
+          }
+        }
       },
       "LoginDto": {
         "type": "object",

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\Register as AuthRegister;
 use App\Http\Requests\Auth\Login as AuthLogin;
 use App\Http\Requests\Auth\User as AuthUser;
+use App\Http\Requests\Auth\UpdateUser as AuthUpdateUser;
 use App\Http\Requests\Auth\Logout as AuthLogout;
 
 use App\Models\User;
@@ -55,6 +56,28 @@ class AuthController extends Controller
     {
         $user = $request->user();
         $token = $request->bearerToken();
+
+        return $this->respondWithToken($user, $token);
+    }
+
+    public function updateUser(AuthUpdateUser $request): JsonResponse
+    {
+        $user = $request->user();
+        $user->update([
+            'firstname' => $request->firstname ?? $user->firstname,
+            'lastname' => $request->lastname ?? $user->lastname,
+            'birthdate' => $request->birthdate ?? $user->birthdate,
+            'country_id' => $request->country_id ?? $user->country_id,
+            'phone' => $request->phone ?? $user->phone,
+            'email' => $request->email ?? $user->email,
+            'password' => isset($request->new_password) ? Hash::make($request->new_password) : $user->password,
+        ]);
+
+        $token = $request->bearerToken();
+        if (isset($request->email) || isset($request->new_password)) {
+            $user->tokens()->delete();
+            $token = $user->createToken(User::ACCESS_TOKEN)->plainTextToken;
+        }
 
         return $this->respondWithToken($user, $token);
     }
