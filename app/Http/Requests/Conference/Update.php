@@ -15,7 +15,7 @@ class Update extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('update', User::class);
+        return $this->user()->can('conferencesUpdate', User::class);
     }
 
     /**

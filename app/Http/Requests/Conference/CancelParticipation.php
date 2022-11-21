@@ -15,7 +15,7 @@ class CancelParticipation extends FormRequest
      */
     public function authorize()
     {
-        return $this->conference && $this->user()->can('cancelParticipation', [User::class, $this->conference]);
+        return $this->conference && $this->user()->can('conferencesCancelParticipation', [User::class, $this->conference]);
     }
 
     /**

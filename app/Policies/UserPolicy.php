@@ -15,27 +15,27 @@ class UserPolicy
 {
     use HandlesAuthorization;
 
-    public function store(User $user)
+    public function conferencesStore(User $user)
     {
         return false;
     }
 
-    public function update(User $user)
+    public function conferencesUpdate(User $user)
     {
         return false;
     }
 
-    public function destroy(User $user)
+    public function conferencesDestroy(User $user)
     {
         return false;
     }
 
-    public function participate(User $user, Conference $conference)
+    public function conferencesParticipate(User $user, Conference $conference)
     {
         return !$conference->isUserAttached($user);
     }
 
-    public function cancelParticipation(User $user, Conference $conference)
+    public function conferencesCancelParticipation(User $user, Conference $conference)
     {
         return $conference->isUserAttached($user);
     }

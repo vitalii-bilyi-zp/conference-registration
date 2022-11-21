@@ -15,7 +15,7 @@ class Participate extends FormRequest
      */
     public function authorize()
     {
-        return $this->conference && $this->user()->can('participate', [User::class, $this->conference]);
+        return $this->conference && $this->user()->can('conferencesParticipate', [User::class, $this->conference]);
     }
 
     /**

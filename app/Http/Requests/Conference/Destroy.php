@@ -15,7 +15,7 @@ class Destroy extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('destroy', User::class);
+        return $this->user()->can('conferencesDestroy', User::class);
     }
 
     /**
