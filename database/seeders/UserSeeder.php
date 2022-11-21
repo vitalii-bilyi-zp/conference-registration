@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 use App\Models\User;
-use App\Models\Conference;
 
 class UserSeeder extends Seeder
 {
@@ -33,9 +32,6 @@ class UserSeeder extends Seeder
             $user = User::factory()->create([
                 'email' => "user+$i@groupbwt.com",
             ]);
-
-            $conference = Conference::inRandomOrder()->first();
-            $conference->users()->attach($user->id);
         }
     }
 }
