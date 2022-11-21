@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 use App\Models\Country;
+use App\Models\Category;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Conference>
@@ -18,12 +19,19 @@ class ConferenceFactory extends Factory
      */
     public function definition()
     {
+        $categoryId = null;
+
+        if (rand(0, 1)) {
+            $categoryId = Category::inRandomOrder()->first()->id;
+        }
+
         return [
-            'title' => fake()->word(),
+            'title' => 'Conference ' . fake()->word(),
             'date' => fake()->date('Y-m-d'),
             'latitude' => fake()->latitude(),
             'longitude' => fake()->longitude(),
             'country_id' => Country::inRandomOrder()->first()->id,
+            'category_id' => $categoryId,
         ];
     }
 }
