@@ -25,7 +25,7 @@ class SearchController extends Controller
                 ->where('title', 'LIKE', '%'. $request->search_term .'%')
                 ->get();
             $conferences->transform(function ($value) {
-                $value->is_conference = true;
+                $value->type = Conference::TYPE;
                 return $value;
             });
 
@@ -37,7 +37,7 @@ class SearchController extends Controller
                 ->where('title', 'LIKE', '%'. $request->search_term .'%')
                 ->get();
             $lectures->transform(function ($value) {
-                $value->is_lecture = true;
+                $value->type = Lecture::TYPE;
                 return $value;
             });
 
