@@ -15,6 +15,8 @@ class Lecture extends Model
     const MIN_DURATION = 5;
     const MAX_DURATION = 60;
 
+    const TYPE = 'lecture';
+
     /**
      * The attributes that are mass assignable.
      *

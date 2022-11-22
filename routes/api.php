@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ConferenceController;
 use App\Http\Controllers\Api\LectureController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\SearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,4 +66,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/categories/{category}', [CategoryController::class, 'show']);
     Route::put('/categories/{category}', [CategoryController::class, 'update']);
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
+});
+
+// search
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/search', [SearchController::class, 'index']);
 });

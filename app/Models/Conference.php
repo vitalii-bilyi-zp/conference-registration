@@ -13,6 +13,8 @@ class Conference extends Model
 {
     use HasFactory;
 
+    const TYPE = 'conference';
+
     /**
      * The attributes that are mass assignable.
      *
