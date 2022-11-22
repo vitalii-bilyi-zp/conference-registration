@@ -98,9 +98,7 @@ class LectureController extends Controller
             'category_id' => $request->category_id,
         ]);
 
-        if (!$conference->isUserAttached($user->id)) {
-            $conference->users()->attach($user->id);
-        }
+        $conference->users()->attach($user->id);
 
         return $this->respondWithSuccess();
     }

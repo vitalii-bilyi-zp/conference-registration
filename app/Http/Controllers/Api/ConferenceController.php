@@ -131,25 +131,6 @@ class ConferenceController extends Controller
         $user = $request->user();
         $conference->users()->detach($user->id);
 
-        if (!$user->isAnnouncer()) {
-            return $this->respondWithSuccess();
-        }
-
-        $existingLecture = Lecture::where([
-            ['user_id', '=', $user->id],
-            ['conference_id', '=', $conference->id],
-        ])->first();
-
-        if (isset($existingLecture)) {
-            $hashFileName = $existingLecture->hash_file_name;
-
-            if (isset($hashFileName)) {
-                $this->lectureService->deletePresentation($hashFileName);
-            }
-
-            $existingLecture->delete();
-        }
-
         return $this->respondWithSuccess();
     }
 }

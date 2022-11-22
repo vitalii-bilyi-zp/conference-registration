@@ -406,7 +406,7 @@
         "tags": [
           "Conferences"
         ],
-        "summary": "",
+        "summary": "(Listener only)",
         "description": "",
         "operationId": "participate",
         "parameters": [
@@ -443,7 +443,7 @@
         "tags": [
           "Conferences"
         ],
-        "summary": "",
+        "summary": "(Listener only)",
         "description": "",
         "operationId": "cancelParticipation",
         "parameters": [
@@ -628,7 +628,7 @@
         "tags": [
           "Lectures"
         ],
-        "summary": "",
+        "summary": "(Announcer only)",
         "description": "",
         "operationId": "lecturesUpdate",
         "parameters": [
@@ -682,7 +682,7 @@
         "tags": [
           "Lectures"
         ],
-        "summary": "",
+        "summary": "(Announcer only)",
         "description": "",
         "operationId": "lecturesDelete",
         "parameters": [

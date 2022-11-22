@@ -32,12 +32,12 @@ class UserPolicy
 
     public function conferencesParticipate(User $user, Conference $conference)
     {
-        return !$conference->isUserAttached($user->id);
+        return $user->isListener() && !$conference->isUserAttached($user->id);
     }
 
     public function conferencesCancelParticipation(User $user, Conference $conference)
     {
-        return $conference->isUserAttached($user->id);
+        return $user->isListener() && $conference->isUserAttached($user->id);
     }
 
     public function lecturesStore(User $user, $conferenceId)
