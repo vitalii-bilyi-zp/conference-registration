@@ -20,6 +20,7 @@ use App\Models\Category;
 use F9Web\ApiResponseHelpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 use App\Services\LectureService;
 use App\Services\CategoryService;
@@ -40,15 +41,22 @@ class ConferenceController extends Controller
     public function index(ConferenceIndex $request): JsonResponse
     {
         $conferences = Conference::with('country')
-            ->when($request->get('category_id'), function(Builder $query) use (&$request) {
-                // $category = Category::find($request->get('category_id'));
-                // $allowedCategoryIds = $this->categoryService->getSubcategoryIdsRecursively($category);
-                // $query->whereIn('category_id', $allowedCategoryIds);
-
-                $query->where('category_id', '=', $request->get('category_id'));
+            ->when($request->get('from_date'), function(Builder $query, $fromDate) {
+                $query->whereDate('date', '>=', $fromDate);
+            })
+            ->when($request->get('to_date'), function(Builder $query, $toDate) {
+                $query->whereDate('date', '<=', $toDate);
+            })
+            ->when($request->get('category_ids'), function(Builder $query, $categoryIds) {
+                $query->whereIn('category_id', $categoryIds);
+            })
+            ->when($request->get('lectures_count'), function(Builder $query, $lecturesСount) {
+                $lecturesCountSource = DB::raw('(SELECT conference_id, COUNT(conference_id) AS lectures_count FROM lectures GROUP BY conference_id) temp');
+                $query->join($lecturesCountSource, 'conferences.id', '=', 'temp.conference_id')->where('temp.lectures_count', '=', $lecturesСount);
             })
             ->paginate(15);
-        $conferences = $conferences->getCollection()->transform(function ($value) {
+
+        $conferences->getCollection()->transform(function ($value) {
             $value->has_free_time = $this->lectureService->checkConferenceFreeTime($value, Lecture::MIN_DURATION);
             return $value;
         });

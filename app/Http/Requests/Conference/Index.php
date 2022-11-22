@@ -25,7 +25,11 @@ class Index extends FormRequest
     {
         return [
             'page' => 'nullable|integer|min:1',
-            'category_id' => 'nullable|integer|exists:categories,id',
+            'category_ids' => 'nullable|array',
+            'category_ids.*' => 'integer|exists:categories,id',
+            'from_date' => 'nullable|date_format:Y-m-d',
+            'to_date' => 'nullable|date_format:Y-m-d',
+            'lectures_count' => 'nullable|integer|min:0',
         ];
     }
 

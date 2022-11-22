@@ -21,11 +21,12 @@ class CommentController extends Controller
     public function index(CommentIndex $request): JsonResponse
     {
         $comments = Comment::query()
-            ->when($request->get('lecture_id'), function(Builder $query) use (&$request) {
-                $query->where('lecture_id', '=', $request->get('lecture_id'));
+            ->when($request->get('lecture_id'), function(Builder $query, $lectureId) {
+                $query->where('lecture_id', '=', $lectureId);
             })
             ->paginate(15);
-        $comments = $comments->getCollection()->transform(function ($value) {
+
+        $comments->getCollection()->transform(function ($value) {
             $commentAuthor = $value->user;
             $value->user_firstname = $commentAuthor->firstname;
             $value->user_lastname = $commentAuthor->lastname;

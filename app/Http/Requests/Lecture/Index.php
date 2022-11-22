@@ -4,6 +4,8 @@ namespace App\Http\Requests\Lecture;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+use App\Models\Lecture;
+
 class Index extends FormRequest
 {
     /**
@@ -26,7 +28,11 @@ class Index extends FormRequest
         return [
             'page' => 'nullable|integer|min:1',
             'conference_id' => 'nullable|integer|exists:conferences,id',
-            'category_id' => 'nullable|integer|exists:categories,id',
+            'category_ids' => 'nullable|array',
+            'category_ids.*' => 'integer|exists:categories,id',
+            'from_date' => 'nullable|date_format:Y-m-d H:i:s',
+            'to_date' => 'nullable|date_format:Y-m-d H:i:s',
+            'duration' => 'nullable|integer|min:' . Lecture::MIN_DURATION . '|max:' . Lecture::MAX_DURATION,
         ];
     }
 

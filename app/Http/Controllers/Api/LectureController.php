@@ -39,20 +39,25 @@ class LectureController extends Controller
     public function index(LectureIndex $request): JsonResponse
     {
         $lectures = Lecture::query()
-            ->when($request->get('conference_id'), function(Builder $query) use (&$request) {
-                $query->where('conference_id', '=', $request->get('conference_id'));
+            ->when($request->get('conference_id'), function(Builder $query, $conferenceId) {
+                $query->where('conference_id', '=', $conferenceId);
             })
-            ->when($request->get('category_id'), function(Builder $query) use (&$request) {
-                // $category = Category::find($request->get('category_id'));
-                // $allowedCategoryIds = $this->categoryService->getSubcategoryIdsRecursively($category);
-                // $query->whereIn('category_id', $allowedCategoryIds);
-
-                $query->where('category_id', '=', $request->get('category_id'));
+            ->when($request->get('from_date'), function(Builder $query, $fromDate) {
+                $query->where('lecture_start', '>=', $fromDate);
+            })
+            ->when($request->get('to_date'), function(Builder $query, $toDate) {
+                $query->where('lecture_end', '<=', $toDate);
+            })
+            ->when($request->get('category_ids'), function(Builder $query, $categoryIds) {
+                $query->whereIn('category_id', $categoryIds);
+            })
+            ->when($request->get('duration'), function(Builder $query, $duration) {
+                $query->whereRaw('TIMESTAMPDIFF(MINUTE, lecture_start, lecture_end) = ?', $duration);
             })
             ->paginate(15);
 
         $user = $request->user();
-        $lectures = $lectures->getCollection()->transform(function ($value) use (&$user) {
+        $lectures->getCollection()->transform(function ($value) use (&$user) {
             $value->in_favorites = $user->inFavoriteLectures($value->id);
             $value->comments_count = count($value->comments);
             unset($value->comments);
