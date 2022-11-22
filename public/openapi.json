@@ -202,9 +202,36 @@
           },
           {
             "in": "query",
-            "name": "category_id",
+            "name": "category_ids[]",
             "schema": {
-              "type": "integer"
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "in": "query",
+            "name": "from_date",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to_date",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lectures_count",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
             }
           }
         ],
@@ -474,9 +501,36 @@
           },
           {
             "in": "query",
-            "name": "category_id",
+            "name": "category_ids[]",
             "schema": {
-              "type": "integer"
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "in": "query",
+            "name": "from_date",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to_date",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "duration",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
             }
           }
         ],
