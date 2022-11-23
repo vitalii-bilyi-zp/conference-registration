@@ -155,11 +155,14 @@ class LectureController extends Controller
             $this->lectureService->deletePresentation($hashFileName);
         }
 
+        $user = $request->user();
+        $lectureUser = $lecture->user;
+        $lectureConference = $lecture->conference;
+
         $lecture->delete();
 
-        $user = $request->user();
         if ($user->id !== $lecture->user_id && $user->type === User::ADMIN_TYPE) {
-            SendAdminDeletedLectureEmail::dispatch($lecture)->onQueue('emails');
+            SendAdminDeletedLectureEmail::dispatch($lectureUser, $lectureConference)->onQueue('emails');
         }
 
         return $this->respondWithSuccess();
