@@ -47,7 +47,7 @@ class AnnouncerJoinedMail extends Notification
     {
         $lecture = $this->lecture;
 
-        return (new MailMessage)->markdown('mail.announcer.joined', compact('lecture'));
+        return (new MailMessage)->markdown('mail.announcer_joined', compact('lecture'));
     }
 
     /**
