@@ -15,6 +15,7 @@ use App\Http\Requests\Lecture\RemoveFromFavorites as LectureRemoveFromFavorites;
 use App\Models\Lecture;
 use App\Models\Conference;
 use App\Models\Category;
+use App\Models\User;
 
 use F9Web\ApiResponseHelpers;
 use Illuminate\Http\JsonResponse;
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 use App\Services\LectureService;
 use App\Services\CategoryService;
+use App\Jobs\Email\SendAdminDeletedLectureEmail;
 
 class LectureController extends Controller
 {
@@ -154,6 +156,11 @@ class LectureController extends Controller
         }
 
         $lecture->delete();
+
+        $user = $request->user();
+        if ($user->id !== $lecture->user_id && $user->type === User::ADMIN_TYPE) {
+            SendAdminDeletedLectureEmail::dispatch($lecture->user_id, $lecture->conference_id)->onQueue('emails');
+        }
 
         return $this->respondWithSuccess();
     }
