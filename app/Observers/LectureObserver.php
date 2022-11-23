@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Lecture;
 use App\Jobs\Email\SendAnnouncerJoinedEmails;
+use App\Jobs\Email\SendLectureTimeChangedEmails;
 
 class LectureObserver
 {
@@ -26,7 +27,11 @@ class LectureObserver
      */
     public function updated(Lecture $lecture)
     {
-        //
+        if (!$lecture->wasChanged('lecture_start') && !$lecture->wasChanged('lecture_end')) {
+            return;
+        }
+
+        SendLectureTimeChangedEmails::dispatch($lecture)->onQueue('emails');
     }
 
     /**
