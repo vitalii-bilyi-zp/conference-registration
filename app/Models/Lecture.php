@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\Conference;
-use App\Models\User;
 use App\Models\Comment;
+use App\Models\User;
 
 class Lecture extends Model
 {

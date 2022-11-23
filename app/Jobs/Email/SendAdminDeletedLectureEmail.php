@@ -9,8 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-use App\Models\User;
-use App\Models\Conference;
+use App\Models\Lecture;
 
 use App\Notifications\AdminDeletedLectureMail;
 
@@ -26,10 +25,10 @@ class SendAdminDeletedLectureEmail implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($userId, $conferenceId)
+    public function __construct(Lecture $lecture)
     {
-        $this->user = User::findOrFail($userId);
-        $this->conference = Conference::findOrFail($conferenceId);
+        $this->user = $lecture->user;
+        $this->conference = $lecture->conference;
     }
 
     /**

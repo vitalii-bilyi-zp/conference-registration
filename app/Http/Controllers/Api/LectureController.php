@@ -159,7 +159,7 @@ class LectureController extends Controller
 
         $user = $request->user();
         if ($user->id !== $lecture->user_id && $user->type === User::ADMIN_TYPE) {
-            SendAdminDeletedLectureEmail::dispatch($lecture->user_id, $lecture->conference_id)->onQueue('emails');
+            SendAdminDeletedLectureEmail::dispatch($lecture)->onQueue('emails');
         }
 
         return $this->respondWithSuccess();
