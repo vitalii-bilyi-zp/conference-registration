@@ -45,16 +45,9 @@ class AnnouncerJoinedMail extends Notification
      */
     public function toMail($notifiable)
     {
-        $user = $this->lecture->user;
-        $conference = $this->lecture->conference;
-        $frontendUrl = config('frontend.url');
-        $conferenceUrl = config('frontend.conferences_url') . '/' . $conference->id;
-        $lectureUrl = config('frontend.lectures_url') . '/' . $this->lecture->id;
-        $conferenceLink = '<a href="' . $frontendUrl . $conferenceUrl . '">' . $conference->title . '</a>';
-        $lectureLink = '<a href="' . $frontendUrl . $lectureUrl . '">' . $this->lecture->title . '</a>';
-        $htmlMessage = 'Добрый день, на конференцию ' . $conferenceLink . ' присоединился  новый участник ' . $user->firstname . ' ' . $user->lastname . ' с докладом на тему ' . $lectureLink;
+        $lecture = $this->lecture;
 
-        return (new MailMessage)->line(new HtmlString($htmlMessage));
+        return (new MailMessage)->markdown('mail.announcer.joined', compact('lecture'));
     }
 
     /**
