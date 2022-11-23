@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\LectureController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\ExportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,4 +72,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 // search
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/search', [SearchController::class, 'index']);
+});
+
+// export
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/export/conferences-csv', [ExportController::class, 'conferencesCSV']);
 });
