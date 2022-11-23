@@ -9,10 +9,13 @@ use App\Http\Requests\Comment\Store as CommentStore;
 use App\Http\Requests\Comment\Update as CommentUpdate;
 
 use App\Models\Comment;
+use App\Models\Lecture;
 
 use F9Web\ApiResponseHelpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\Builder;
+
+use App\Jobs\Email\SendCommentAddedEmail;
 
 class CommentController extends Controller
 {
@@ -46,6 +49,11 @@ class CommentController extends Controller
             'lecture_id' => $request->lecture_id,
             'user_id' => $user->id,
         ]);
+
+        $lecture = Lecture::find($request->lecture_id);
+        if ($user->id !== $lecture->user_id) {
+            SendCommentAddedEmail::dispatch($user, $lecture)->onQueue('emails');
+        }
 
         return $this->respondWithSuccess();
     }
