@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\DB;
 
 use App\Services\LectureService;
 use App\Services\CategoryService;
+use App\Jobs\Email\SendListenerJoinedEmails;
 
 class ConferenceController extends Controller
 {
@@ -122,6 +123,8 @@ class ConferenceController extends Controller
     {
         $user = $request->user();
         $conference->users()->attach($user->id);
+
+        SendListenerJoinedEmails::dispatch($user, $conference)->onQueue('emails');
 
         return $this->respondWithSuccess();
     }
