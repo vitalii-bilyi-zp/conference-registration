@@ -51,9 +51,9 @@ class ConferenceController extends Controller
             ->when($request->get('category_ids'), function(Builder $query, $categoryIds) {
                 $query->whereIn('category_id', $categoryIds);
             })
-            ->when($request->get('lectures_count'), function(Builder $query, $lecturesСount) {
+            ->when($request->exists('lectures_count'), function(Builder $query) use (&$request) {
                 $lecturesCountSource = DB::raw('(SELECT conference_id, COUNT(conference_id) AS lectures_count FROM lectures GROUP BY conference_id) temp');
-                $query->join($lecturesCountSource, 'conferences.id', '=', 'temp.conference_id')->where('temp.lectures_count', '=', $lecturesСount);
+                $query->join($lecturesCountSource, 'conferences.id', '=', 'temp.conference_id')->where('temp.lectures_count', '=', $request->lectures_count);
             })
             ->paginate(15);
 
