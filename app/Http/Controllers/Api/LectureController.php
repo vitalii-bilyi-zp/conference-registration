@@ -84,7 +84,6 @@ class LectureController extends Controller
         }
 
         $user = $request->user();
-        $conference = Conference::find($request->conference_id);
 
         Lecture::create([
             'title' => $request->title,
@@ -97,8 +96,6 @@ class LectureController extends Controller
             'user_id' => $user->id,
             'category_id' => $request->category_id,
         ]);
-
-        $conference->users()->attach($user->id);
 
         return $this->respondWithSuccess();
     }
@@ -157,10 +154,6 @@ class LectureController extends Controller
         }
 
         $lecture->delete();
-
-        $user = $request->user();
-        $conference = Conference::find($lecture->conference_id);
-        $conference->users()->detach($user->id);
 
         return $this->respondWithSuccess();
     }

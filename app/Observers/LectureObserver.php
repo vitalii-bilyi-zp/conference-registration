@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Lecture;
+use App\Models\Conference;
 use App\Jobs\Email\SendAnnouncerJoinedEmails;
 use App\Jobs\Email\SendLectureTimeChangedEmails;
 
@@ -16,6 +17,9 @@ class LectureObserver
      */
     public function created(Lecture $lecture)
     {
+        $conference = Conference::find($lecture->conference_id);
+        $conference->users()->attach($lecture->user_id);
+
         SendAnnouncerJoinedEmails::dispatch($lecture)->onQueue('emails');
     }
 
@@ -42,7 +46,8 @@ class LectureObserver
      */
     public function deleted(Lecture $lecture)
     {
-        //
+        $conference = Conference::find($lecture->conference_id);
+        $conference->users()->detach($lecture->user_id);
     }
 
     /**
