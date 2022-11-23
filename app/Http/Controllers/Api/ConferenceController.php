@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\DB;
 use App\Services\LectureService;
 use App\Services\CategoryService;
 use App\Jobs\Email\SendListenerJoinedEmails;
+use App\Jobs\Email\SendAdminDeletedConferenceEmails;
 
 class ConferenceController extends Controller
 {
@@ -114,7 +115,12 @@ class ConferenceController extends Controller
 
     public function destroy(ConferenceDestroy $request, Conference $conference): JsonResponse
     {
+        $conferenceUsers = $conference->users;
+        $conferenceTitle = $conference->title;
+
         $conference->delete();
+
+        SendAdminDeletedConferenceEmails::dispatch($conferenceUsers, $conferenceTitle)->onQueue('emails');
 
         return $this->respondWithSuccess();
     }
