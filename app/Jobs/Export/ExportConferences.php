@@ -48,7 +48,7 @@ class ExportConferences implements ShouldQueue
             trans('export.conferences.listeners_count'),
         ];
         $data = [$headers];
-        $conferences = Conference::all()
+        Conference::all()
             ->each(function ($conference) use (&$data) {
                 $country = $conference->country;
                 $lectures = $conference->lectures;
