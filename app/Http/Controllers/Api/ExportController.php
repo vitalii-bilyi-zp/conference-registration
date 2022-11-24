@@ -23,28 +23,36 @@ class ExportController extends Controller
 
     public function conferencesCSV(ExportConferencesCSV $request): JsonResponse
     {
-        ExportConferences::dispatch()->onQueue('exports');
+        ExportConferences::dispatch()
+            ->onQueue('exports')
+            ->delay(now()->addSeconds(5));
 
         return $this->respondWithSuccess();
     }
 
     public function lecturesCSV(ExportLecturesCSV $request): JsonResponse
     {
-        ExportLectures::dispatch($request->get('conference_id'))->onQueue('exports');
+        ExportLectures::dispatch($request->get('conference_id'))
+            ->onQueue('exports')
+            ->delay(now()->addSeconds(5));
 
         return $this->respondWithSuccess();
     }
 
     public function listenersCSV(ExportListenersCSV $request): JsonResponse
     {
-        ExportListeners::dispatch($request->get('conference_id'))->onQueue('exports');
+        ExportListeners::dispatch($request->get('conference_id'))
+            ->onQueue('exports')
+            ->delay(now()->addSeconds(5));
 
         return $this->respondWithSuccess();
     }
 
     public function commentsCSV(ExportCommentsCSV $request): JsonResponse
     {
-        ExportComments::dispatch($request->get('lecture_id'))->onQueue('exports');
+        ExportComments::dispatch($request->get('lecture_id'))
+            ->onQueue('exports')
+            ->delay(now()->addSeconds(5));
 
         return $this->respondWithSuccess();
     }
