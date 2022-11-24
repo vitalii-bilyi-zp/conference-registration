@@ -71,6 +71,6 @@ class ExportConferences implements ShouldQueue
         $fileName = $exportService->saveToCSV($data);
         DeleteFile::dispatch($fileName)
             ->onQueue('exports')
-            ->delay(now()->addSeconds(10));
+            ->delay(now()->addSeconds(config('export.file_lifetime')));
     }
 }
