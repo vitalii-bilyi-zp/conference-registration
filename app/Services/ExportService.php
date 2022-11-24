@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 use App\Models\Conference;
 
@@ -24,5 +25,16 @@ class ExportService
         }
 
         fclose($file);
+
+        return $fileName;
+    }
+
+    public function deleteFile($fileName)
+    {
+        if (!isset($fileName)) {
+            return;
+        }
+
+        Storage::disk('exports')->delete($fileName);
     }
 }

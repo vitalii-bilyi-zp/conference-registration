@@ -13,6 +13,7 @@ use App\Models\Conference;
 use App\Models\User;
 
 use App\Services\ExportService;
+use App\Jobs\Export\DeleteFile;
 
 use Carbon\Carbon;
 
@@ -67,6 +68,9 @@ class ExportConferences implements ShouldQueue
                 array_push($data, $fields);
             });
 
-        $exportService->saveToCSV($data);
+        $fileName = $exportService->saveToCSV($data);
+        DeleteFile::dispatch($fileName)
+            ->onQueue('exports')
+            ->delay(now()->addSeconds(10));
     }
 }

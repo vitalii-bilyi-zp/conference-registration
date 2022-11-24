@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Models\Lecture;
 
 use App\Services\ExportService;
+use App\Jobs\Export\DeleteFile;
 
 use Carbon\Carbon;
 
@@ -65,6 +66,9 @@ class ExportLectures implements ShouldQueue
                 array_push($data, $fields);
             });
 
-        $exportService->saveToCSV($data);
+        $fileName = $exportService->saveToCSV($data);
+        DeleteFile::dispatch($fileName)
+            ->onQueue('exports')
+            ->delay(now()->addSeconds(10));
     }
 }
