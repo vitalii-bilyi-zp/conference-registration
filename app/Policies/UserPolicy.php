@@ -101,4 +101,24 @@ class UserPolicy
     {
         return false;
     }
+
+    public function exportConferences(User $user)
+    {
+        return false;
+    }
+
+    public function exportLectures(User $user)
+    {
+        return false;
+    }
+
+    public function exportListeners(User $user)
+    {
+        return false;
+    }
+
+    public function exportComments(User $user)
+    {
+        return false;
+    }
 }

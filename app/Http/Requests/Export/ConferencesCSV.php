@@ -4,6 +4,8 @@ namespace App\Http\Requests\Export;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+use App\Models\User;
+
 class ConferencesCSV extends FormRequest
 {
     /**
@@ -13,7 +15,7 @@ class ConferencesCSV extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return $this->user()->can('exportConferences', User::class);
     }
 
     /**
