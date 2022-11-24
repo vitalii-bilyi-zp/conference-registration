@@ -29,6 +29,15 @@ class ExportService
         return $fileName;
     }
 
+    public function getFilePath($fileName)
+    {
+        if (!isset($fileName)) {
+            return null;
+        }
+
+        return Storage::disk('exports')->url($fileName);
+    }
+
     public function deleteFile($fileName)
     {
         if (!isset($fileName)) {

@@ -14,6 +14,7 @@ use App\Models\User;
 
 use App\Services\ExportService;
 use App\Jobs\Export\DeleteFile;
+use App\Events\ExportFinished;
 
 use Carbon\Carbon;
 
@@ -69,6 +70,8 @@ class ExportConferences implements ShouldQueue
             });
 
         $fileName = $exportService->saveToCSV($data);
+        $filePath = $exportService->getFilePath($fileName);
+        ExportFinished::dispatch('conferences', $filePath);
         DeleteFile::dispatch($fileName)
             ->onQueue('exports')
             ->delay(now()->addSeconds(config('export.file_lifetime')));
