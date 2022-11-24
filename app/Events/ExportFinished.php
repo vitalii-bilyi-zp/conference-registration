@@ -42,7 +42,7 @@ class ExportFinished implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('export.' . $this->type);
+        return new PrivateChannel('export.' . $this->type);
     }
 
     /**

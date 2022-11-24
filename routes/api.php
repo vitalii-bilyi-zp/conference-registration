@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Broadcast;
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ConferenceController;
@@ -81,3 +82,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/export/listeners-csv', [ExportController::class, 'listenersCSV']);
     Route::get('/export/comments-csv', [ExportController::class, 'commentsCSV']);
 });
+
+// websockets
+Broadcast::routes(['middleware' => ['auth:sanctum']]);

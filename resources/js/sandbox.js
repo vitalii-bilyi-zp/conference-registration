@@ -1,4 +1,6 @@
 import axios from "axios";
+import Echo from "laravel-echo";
+import Pusher from "pusher-js";
 
 window.apiClient = axios.create({
     baseURL: import.meta.env.VITE_APP_URL || "",
@@ -7,6 +9,39 @@ window.apiClient = axios.create({
         "Content-Type": "application/json",
     },
 });
+
+window.Pusher = Pusher;
+
+function getEchoInstance() {
+    return new Echo({
+        broadcaster: "pusher",
+        key: import.meta.env.VITE_PUSHER_APP_KEY,
+        wsHost: import.meta.env.VITE_PUSHER_HOST
+            ? import.meta.env.VITE_PUSHER_HOST
+            : `ws-${import.meta.env.VITE_PUSHER_APP_CLUSTER}.pusher.com`,
+        wsPort: import.meta.env.VITE_PUSHER_PORT ?? 80,
+        wssPort: import.meta.env.VITE_PUSHER_PORT ?? 443,
+        forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? "https") === "https",
+        enabledTransports: ["ws", "wss"],
+        authorizer: (channel) => {
+            return {
+                authorize: (socketId, callback) => {
+                    window.apiClient
+                        .post("/api/broadcasting/auth", {
+                            socket_id: socketId,
+                            channel_name: channel.name,
+                        })
+                        .then((response) => {
+                            callback(null, response.data);
+                        })
+                        .catch((error) => {
+                            callback(error);
+                        });
+                },
+            };
+        },
+    });
+}
 
 function bindToken(token) {
     window.apiClient.defaults.headers.common[
@@ -74,23 +109,6 @@ function removeToken() {
     }
 })();
 
-import Echo from "laravel-echo";
-
-import Pusher from "pusher-js";
-window.Pusher = Pusher;
-
-window.Echo = new Echo({
-    broadcaster: "pusher",
-    key: import.meta.env.VITE_PUSHER_APP_KEY,
-    wsHost: import.meta.env.VITE_PUSHER_HOST
-        ? import.meta.env.VITE_PUSHER_HOST
-        : `ws-${import.meta.env.VITE_PUSHER_APP_CLUSTER}.pusher.com`,
-    wsPort: import.meta.env.VITE_PUSHER_PORT ?? 80,
-    wssPort: import.meta.env.VITE_PUSHER_PORT ?? 443,
-    forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? "https") === "https",
-    enabledTransports: ["ws", "wss"],
-});
-
 (function () {
     const exportConferencesBtn = document.getElementById("export-conferences");
     if (exportConferencesBtn) {
@@ -108,11 +126,12 @@ window.Echo = new Echo({
             const url = "/api/export/conferences-csv";
             await window.apiClient.get(url);
 
-            const channel = window.Echo.channel("export.conferences");
+            const echo = getEchoInstance();
+            const channel = echo.private("export.conferences");
             channel.listen("ExportFinished", (e) => {
                 console.log(e);
 
-                window.Echo.leaveChannel("export.conferences");
+                echo.leave("export.conferences");
                 target.disabled = false;
                 target.innerText = prevText;
             });
@@ -138,11 +157,12 @@ window.Echo = new Echo({
             const url = "/api/export/lectures-csv";
             await window.apiClient.get(url);
 
-            const channel = window.Echo.channel("export.lectures");
+            const echo = getEchoInstance();
+            const channel = echo.private("export.lectures");
             channel.listen("ExportFinished", (e) => {
                 console.log(e);
 
-                window.Echo.leaveChannel("export.lectures");
+                echo.leave("export.lectures");
                 target.disabled = false;
                 target.innerText = prevText;
             });
@@ -168,11 +188,12 @@ window.Echo = new Echo({
             const url = "/api/export/listeners-csv";
             await window.apiClient.get(url);
 
-            const channel = window.Echo.channel("export.listeners");
+            const echo = getEchoInstance();
+            const channel = echo.private("export.listeners");
             channel.listen("ExportFinished", (e) => {
                 console.log(e);
 
-                window.Echo.leaveChannel("export.listeners");
+                echo.leave("export.listeners");
                 target.disabled = false;
                 target.innerText = prevText;
             });
@@ -198,11 +219,12 @@ window.Echo = new Echo({
             const url = "/api/export/comments-csv";
             await window.apiClient.get(url);
 
-            const channel = window.Echo.channel("export.comments");
+            const echo = getEchoInstance();
+            const channel = echo.private("export.comments");
             channel.listen("ExportFinished", (e) => {
                 console.log(e);
 
-                window.Echo.leaveChannel("export.comments");
+                echo.leave("export.comments");
                 target.disabled = false;
                 target.innerText = prevText;
             });
