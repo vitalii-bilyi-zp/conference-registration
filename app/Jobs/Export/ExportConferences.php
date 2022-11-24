@@ -8,13 +8,19 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\File;
 
 use App\Models\Conference;
+use App\Models\User;
+
+use App\Services\ExportService;
+
+use Carbon\Carbon;
 
 class ExportConferences implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public $tries = 3;
 
     /**
      * Create a new job instance.
@@ -31,22 +37,36 @@ class ExportConferences implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(ExportService $exportService)
     {
-        $path = config('filesystems.disks.exports.root');
+        $headers = [
+            trans('export.conferences.title'),
+            trans('export.conferences.date'),
+            trans('export.conferences.address'),
+            trans('export.conferences.country'),
+            trans('export.conferences.lectures_count'),
+            trans('export.conferences.listeners_count'),
+        ];
+        $data = [$headers];
+        $conferences = Conference::all()
+            ->each(function ($conference) use (&$data) {
+                $country = $conference->country;
+                $lectures = $conference->lectures;
+                $listeners = $conference->users()
+                    ->where('type', '=', User::LISTENER_TYPE)
+                    ->get();
+                $fields = [
+                    $conference->title,
+                    Carbon::parse($conference->date)->format('Y-m-d'),
+                    $conference->latitude . ' - ' . $conference->longitude,
+                    $country->name,
+                    count($lectures),
+                    count($listeners),
+                ];
 
-        if(!File::isDirectory($path)) {
-            File::makeDirectory($path, 0777, true, true);
-        }
+                array_push($data, $fields);
+            });
 
-        $fileName = uniqid() . '.csv';
-        $file = fopen($path . '/' . $fileName, 'w');
-
-        $conferences = Conference::all();
-        $conferences->each(function ($conference) use ($file) {
-            fputcsv($file, $conference->toArray());
-        });
-
-        fclose($file);
+        $exportService->saveToCSV($data);
     }
 }
