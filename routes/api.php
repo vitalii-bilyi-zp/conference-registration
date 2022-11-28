@@ -50,6 +50,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/lectures/{lecture}', [LectureController::class, 'show']);
     Route::put('/lectures/{lecture}', [LectureController::class, 'update']);
     Route::delete('/lectures/{lecture}', [LectureController::class, 'destroy']);
+    Route::get('/lectures/{lecture}/zoom-link', [LectureController::class, 'zoomLink']);
     Route::post('/lectures/{lecture}/to-favorites', [LectureController::class, 'toFavorites']);
     Route::post('/lectures/{lecture}/remove-from-favorites', [LectureController::class, 'removeFromFavorites']);
 });

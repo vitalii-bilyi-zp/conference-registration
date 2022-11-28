@@ -9,6 +9,7 @@ use App\Http\Requests\Lecture\Store as LectureStore;
 use App\Http\Requests\Lecture\Show as LectureShow;
 use App\Http\Requests\Lecture\Update as LectureUpdate;
 use App\Http\Requests\Lecture\Destroy as LectureDestroy;
+use App\Http\Requests\Lecture\ZoomLink as LectureZoomLink;
 use App\Http\Requests\Lecture\ToFavorites as LectureToFavorites;
 use App\Http\Requests\Lecture\RemoveFromFavorites as LectureRemoveFromFavorites;
 
@@ -106,11 +107,11 @@ class LectureController extends Controller
             ];
 
             $zoomMeeting = $this->zoomService->createMeeting($user->zoom_id, $data);
-            if (isset($zoomMeeting)) {
-                $zoomMeetingId = $zoomMeeting['id'];
-            } else {
+            if (!isset($zoomMeeting)) {
                 return $this->respondError();
             }
+
+            $zoomMeetingId = $zoomMeeting['id'];
         }
 
         Lecture::create([
@@ -211,6 +212,25 @@ class LectureController extends Controller
         }
 
         return $this->respondWithSuccess();
+    }
+
+    public function zoomLink(LectureZoomLink $request, Lecture $lecture): JsonResponse
+    {
+        $user = $request->user();
+
+        $zoomMeeting = $this->zoomService->getMeeting($lecture->zoom_meeting_id);
+        if (!isset($zoomMeeting)) {
+            return $this->respondError();
+        }
+
+        $zoomLink = null;
+        if ($user->id === $lecture->user_id) {
+            $zoomLink = $zoomMeeting['start_url'];
+        } else {
+            $zoomLink = $zoomMeeting['join_url'];
+        }
+
+        return $this->setDefaultSuccessResponse([])->respondWithSuccess(['zoom_link' => $zoomLink]);
     }
 
     public function toFavorites(LectureToFavorites $request, Lecture $lecture): JsonResponse

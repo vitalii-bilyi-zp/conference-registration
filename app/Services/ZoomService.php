@@ -91,6 +91,24 @@ class ZoomService
         return null;
     }
 
+    public function getMeeting($zoomMeetingId)
+    {
+        $token = $this->getToken();
+        if (!isset($token)) {
+            return null;
+        }
+
+        $url = config('zoom.api_url') . '/meetings/' . $zoomMeetingId;
+        $response = Http::withToken($token)
+            ->get($url);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return null;
+    }
+
     public function createMeeting($zoomUserId, $requestBody)
     {
         $token = $this->getToken();

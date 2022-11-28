@@ -88,6 +88,19 @@ class UserPolicy
         return $user->id === $lecture->user_id;
     }
 
+    public function lecturesZoomLink(User $user, Lecture $lecture)
+    {
+        if (!isset($lecture->zoom_meeting_id)) {
+            return false;
+        }
+
+        $conference = $user->conferences()
+            ->whereRaw('`conferences`.`id` = ?', $lecture->conference_id)
+            ->first();
+
+        return isset($conference);
+    }
+
     public function lecturesToFavorites(User $user, Lecture $lecture)
     {
         return !$user->inFavoriteLectures($lecture->id);
