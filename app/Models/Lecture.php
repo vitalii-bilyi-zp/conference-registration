@@ -33,6 +33,8 @@ class Lecture extends Model
         'conference_id',
         'user_id',
         'category_id',
+        'is_online',
+        'zoom_meeting_id',
     ];
 
     /**
