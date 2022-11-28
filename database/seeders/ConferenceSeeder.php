@@ -49,8 +49,6 @@ class ConferenceSeeder extends Seeder
                     'user_id' => $user->id,
                     'category_id' => $conference->category_id,
                 ]);
-
-                $conference->users()->attach($user->id);
             });
     }
 }
