@@ -26,7 +26,7 @@ class Store extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('lecturesStore', [User::class, $this->conference_id]);
+        return $this->user()->can('lecturesStore', [User::class, $this->conference_id, $this->is_online]);
     }
 
     /**
@@ -44,6 +44,7 @@ class Store extends FormRequest
             'presentation' => 'nullable|file|mimes:ppt,pptx|max:10000',
             'conference_id' => 'required|integer|exists:conferences,id',
             'category_id' => 'nullable|integer|exists:categories,id',
+            'is_online' => 'nullable|boolean',
         ];
     }
 

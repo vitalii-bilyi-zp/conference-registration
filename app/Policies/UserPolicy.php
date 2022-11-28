@@ -11,9 +11,17 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 use Carbon\Carbon;
 
+use App\Services\ZoomService;
+
 class UserPolicy
 {
     use HandlesAuthorization;
+
+    protected $zoomService;
+
+    public function __construct(ZoomService $zoomService) {
+        $this->zoomService = $zoomService;
+    }
 
     public function conferencesStore(User $user)
     {
@@ -40,7 +48,7 @@ class UserPolicy
         return $user->isListener() && $conference->isUserAttached($user->id);
     }
 
-    public function lecturesStore(User $user, $conferenceId)
+    public function lecturesStore(User $user, $conferenceId, $isOnline)
     {
         if (!$user->isAnnouncer()) {
             return false;
@@ -51,12 +59,28 @@ class UserPolicy
             ['conference_id', '=', $conferenceId],
         ])->first();
 
-        return !isset($existingLecture);
+        if (isset($existingLecture)) {
+            return false;
+        }
+
+        if ($isOnline && !$this->zoomService->checkUserExistsOtherwiseInvite($user)) {
+            return false;
+        }
+
+        return true;
     }
 
     public function lecturesUpdate(User $user, Lecture $lecture)
     {
-        return $user->id === $lecture->user_id;
+        if ($user->id !== $lecture->user_id) {
+            return false;
+        }
+
+        if ($lecture->is_online && !$this->zoomService->checkUserExistsOtherwiseInvite($user)) {
+            return false;
+        }
+
+        return true;
     }
 
     public function lecturesDestroy(User $user, Lecture $lecture)
