@@ -23,7 +23,10 @@ use Illuminate\Database\Eloquent\Builder;
 
 use App\Services\LectureService;
 use App\Services\CategoryService;
+use App\Services\ZoomService;
 use App\Jobs\Email\SendAdminDeletedLectureEmail;
+
+use Carbon\Carbon;
 
 class LectureController extends Controller
 {
@@ -31,15 +34,19 @@ class LectureController extends Controller
 
     protected $lectureService;
     protected $categoryService;
+    protected $zoomService;
 
-    public function __construct(LectureService $lectureService, CategoryService $categoryService)
+    public function __construct(LectureService $lectureService, CategoryService $categoryService, ZoomService $zoomService)
     {
         $this->lectureService = $lectureService;
         $this->categoryService = $categoryService;
+        $this->zoomService = $zoomService;
     }
 
     public function index(LectureIndex $request): JsonResponse
     {
+        $user = $request->user();
+
         $lectures = Lecture::query()
             ->when($request->get('conference_id'), function(Builder $query, $conferenceId) {
                 $query->where('conference_id', '=', $conferenceId);
@@ -58,7 +65,6 @@ class LectureController extends Controller
             })
             ->paginate(15);
 
-        $user = $request->user();
         $lectures->getCollection()->transform(function ($value) use (&$user) {
             $value->in_favorites = $user->inFavoriteLectures($value->id);
             $value->comments_count = count($value->comments);
@@ -72,10 +78,11 @@ class LectureController extends Controller
 
     public function store(LectureStore $request): JsonResponse
     {
+        $user = $request->user();
+
         $hashFileName = null;
         $originalFileName = null;
         $presentation = $request->file('presentation');
-
         if (isset($presentation)) {
             $temp = $this->lectureService->storePresentation($presentation);
 
@@ -85,7 +92,26 @@ class LectureController extends Controller
             }
         }
 
-        $user = $request->user();
+        $zoomMeetingId = null;
+        if ($request->is_online) {
+            $lectureStartDate = Carbon::createFromFormat('Y-m-d H:i:s', $request->lecture_start);
+            $lectureEndDate = Carbon::createFromFormat('Y-m-d H:i:s', $request->lecture_end);
+            $lectureDuration = $lectureEndDate->diffInMinutes($lectureStartDate);
+            $data = [
+                'default_password' => true,
+                'topic' => $request->title,
+                'start_time' => $lectureStartDate->toIso8601ZuluString(),
+                'duration' => $lectureDuration,
+                'type' => 2
+            ];
+
+            $zoomMeeting = $this->zoomService->createMeeting($user->zoom_id, $data);
+            if (isset($zoomMeeting)) {
+                $zoomMeetingId = $zoomMeeting['id'];
+            } else {
+                return $this->respondError();
+            }
+        }
 
         Lecture::create([
             'title' => $request->title,
@@ -97,6 +123,8 @@ class LectureController extends Controller
             'conference_id' => $request->conference_id,
             'user_id' => $user->id,
             'category_id' => $request->category_id,
+            'is_online' => $request->is_online,
+            'zoom_meeting_id' => $zoomMeetingId,
         ]);
 
         return $this->respondWithSuccess();
@@ -104,11 +132,12 @@ class LectureController extends Controller
 
     public function show(LectureShow $request, Lecture $lecture): JsonResponse
     {
+        $user = $request->user();
+
         if (isset($lecture->hash_file_name)) {
             $lecture->file_path = $this->lectureService->getPresentationPath($lecture->hash_file_name);
         }
 
-        $user = $request->user();
         $lecture->in_favorites = $user->inFavoriteLectures($lecture->id);
         $lecture->conference = $lecture->conference;
 
@@ -120,7 +149,6 @@ class LectureController extends Controller
         $hashFileName = $lecture->hash_file_name;
         $originalFileName = $lecture->original_file_name;
         $presentation = $request->file('presentation');
-
         if (isset($presentation)) {
             if (isset($hashFileName)) {
                 $this->lectureService->deletePresentation($hashFileName);
@@ -132,6 +160,19 @@ class LectureController extends Controller
                 $hashFileName = $temp;
                 $originalFileName = $presentation->getClientOriginalName();
             }
+        }
+
+        if (isset($lecture->zoom_meeting_id)) {
+            $lectureStartDate = Carbon::createFromFormat('Y-m-d H:i:s', $request->lecture_start ?? $lecture->lecture_start);
+            $lectureEndDate = Carbon::createFromFormat('Y-m-d H:i:s', $request->lecture_end ?? $lecture->lecture_end);
+            $lectureDuration = $lectureEndDate->diffInMinutes($lectureStartDate);
+            $data = [
+                'topic' => $request->title ?? $lecture->title,
+                'start_time' => $lectureStartDate->toIso8601ZuluString(),
+                'duration' => $lectureDuration,
+            ];
+
+            $this->zoomService->updateMeeting($lecture->zoom_meeting_id, $data);
         }
 
         $lecture->update([
@@ -149,13 +190,17 @@ class LectureController extends Controller
 
     public function destroy(LectureDestroy $request, Lecture $lecture): JsonResponse
     {
-        $hashFileName = $lecture->hash_file_name;
+        $user = $request->user();
 
+        $hashFileName = $lecture->hash_file_name;
         if (isset($hashFileName)) {
             $this->lectureService->deletePresentation($hashFileName);
         }
 
-        $user = $request->user();
+        if (isset($lecture->zoom_meeting_id)) {
+            $this->zoomService->deleteMeeting($lecture->zoom_meeting_id);
+        }
+
         $lectureUser = $lecture->user;
         $lectureConference = $lecture->conference;
 
