@@ -67,7 +67,7 @@ class ZoomService
     {
         $token = $this->getToken();
         if (!isset($token)) {
-            return false;
+            return null;
         }
 
         $url = config('zoom.api_url') . '/users';
@@ -83,6 +83,56 @@ class ZoomService
 
         $response = Http::withToken($token)
             ->post($url, $requestBody);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return null;
+    }
+
+    public function createMeeting($zoomUserId, $requestBody)
+    {
+        $token = $this->getToken();
+        if (!isset($token)) {
+            return null;
+        }
+
+        $url = config('zoom.api_url') . '/users/' . $zoomUserId . '/meetings';
+        $response = Http::withToken($token)
+            ->post($url, $requestBody);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return null;
+    }
+
+    public function updateMeeting($zoomMeetingId, $requestBody)
+    {
+        $token = $this->getToken();
+        if (!isset($token)) {
+            return false;
+        }
+
+        $url = config('zoom.api_url') . '/meetings/' . $zoomMeetingId;
+        $response = Http::withToken($token)
+            ->patch($url, $requestBody);
+
+        return $response->successful();
+    }
+
+    public function deleteMeeting($zoomMeetingId)
+    {
+        $token = $this->getToken();
+        if (!isset($token)) {
+            return false;
+        }
+
+        $url = config('zoom.api_url') . '/meetings/' . $zoomMeetingId;
+        $response = Http::withToken($token)
+            ->delete($url);
 
         return $response->successful();
     }
