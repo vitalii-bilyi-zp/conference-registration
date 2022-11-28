@@ -158,4 +158,9 @@ class UserPolicy
     {
         return false;
     }
+
+    public function zoomMeetingsViewList(User $user)
+    {
+        return false;
+    }
 }

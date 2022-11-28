@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\ExportController;
+use App\Http\Controllers\Api\ZoomMeetingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,6 +83,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/export/lectures-csv', [ExportController::class, 'lecturesCSV']);
     Route::get('/export/listeners-csv', [ExportController::class, 'listenersCSV']);
     Route::get('/export/comments-csv', [ExportController::class, 'commentsCSV']);
+});
+
+// zoom meetings
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('/zoom-meetings', [ZoomMeetingController::class, 'index']);
 });
 
 // websockets

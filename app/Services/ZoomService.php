@@ -15,7 +15,6 @@ class ZoomService
             'account_id' => config('zoom.account_id'),
         ];
         $url = config('zoom.oauth_url') . '?' . http_build_query($queryParams);
-
         $response = Http::withBasicAuth(config('zoom.client_id'), config('zoom.client_secret'))
             ->post($url);
 
@@ -80,7 +79,24 @@ class ZoomService
                 'type' => 1,
             ],
         ];
+        $response = Http::withToken($token)
+            ->post($url, $requestBody);
 
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return null;
+    }
+
+    public function createMeeting($zoomUserId, $requestBody)
+    {
+        $token = $this->getToken();
+        if (!isset($token)) {
+            return null;
+        }
+
+        $url = config('zoom.api_url') . '/users/' . $zoomUserId . '/meetings';
         $response = Http::withToken($token)
             ->post($url, $requestBody);
 
@@ -101,24 +117,6 @@ class ZoomService
         $url = config('zoom.api_url') . '/meetings/' . $zoomMeetingId;
         $response = Http::withToken($token)
             ->get($url);
-
-        if ($response->successful()) {
-            return $response->json();
-        }
-
-        return null;
-    }
-
-    public function createMeeting($zoomUserId, $requestBody)
-    {
-        $token = $this->getToken();
-        if (!isset($token)) {
-            return null;
-        }
-
-        $url = config('zoom.api_url') . '/users/' . $zoomUserId . '/meetings';
-        $response = Http::withToken($token)
-            ->post($url, $requestBody);
 
         if ($response->successful()) {
             return $response->json();
@@ -153,5 +151,73 @@ class ZoomService
             ->delete($url);
 
         return $response->successful();
+    }
+
+    public function getAllMeetings()
+    {
+        $token = $this->getToken();
+        if (!isset($token)) {
+            return [];
+        }
+
+        $queryParams = [
+            'page_size' => 300,
+        ];
+        $url = config('zoom.api_url') . '/users?' . http_build_query($queryParams);
+        $response = Http::withToken($token)
+            ->get($url);
+
+        if (!$response->successful()) {
+            return [];
+        }
+
+        $allMeetings = [];
+        $allUsers = $response->json('users');
+        foreach ($allUsers as $user) {
+            $allMeetings = array_merge($allMeetings, $this->getUserMeetingsWithoutPagination($user['id'], $token));
+        }
+
+        return $allMeetings;
+    }
+
+    public function getUserMeetingsWithoutPagination($zoomUserId, $token = null)
+    {
+        if (!isset($token)) {
+            $token = $this->getToken();
+        }
+        if (!isset($token)) {
+            return [];
+        }
+
+        $queryParams = [
+            'page_size' => 300,
+        ];
+        $url = config('zoom.api_url') . '/users/' . $zoomUserId . '/meetings?' . http_build_query($queryParams);
+        $response = Http::withToken($token)
+            ->get($url);
+
+        if (!$response->successful()) {
+            return [];
+        }
+
+        $allMeetings = $response->json('meetings');
+        $nextPageToken = $response->json('next_page_token');
+        while (!empty($nextPageToken)) {
+            $queryParams = [
+                'page_size' => 300,
+                'next_page_token' => $nextPageToken,
+            ];
+            $url = config('zoom.api_url') . '/users/' . $zoomUserId . '/meetings?' . http_build_query($queryParams);
+            $response = Http::withToken($token)
+                ->get($url);
+
+            if ($response->successful()) {
+                $allMeetings = array_merge($allMeetings, $response->json('meetings'));
+            }
+
+            $nextPageToken = $response->json('next_page_token');
+        }
+
+        return $allMeetings;
     }
 }
