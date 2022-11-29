@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\Conference;
 use App\Models\Comment;
 use App\Models\User;
+
+use Carbon\Carbon;
 
 class Lecture extends Model
 {
@@ -17,6 +20,10 @@ class Lecture extends Model
     const MAX_DURATION = 60;
 
     const TYPE = 'lecture';
+
+    const WAITING_STATUS = 'Waiting';
+    const STARTED_STATUS = 'Started';
+    const ENDED_STATUS = 'Ended';
 
     /**
      * The attributes that are mass assignable.
@@ -55,6 +62,38 @@ class Lecture extends Model
         'lecture_start' => 'datetime',
         'lecture_end' => 'datetime',
     ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['status'];
+
+    /**
+     * Get the lecture's status.
+     *
+     * @return \Illuminate\Database\Eloquent\Casts\Attribute
+     */
+    protected function status(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $lectureStartDate = Carbon::createFromFormat('Y-m-d H:i:s', $this->lecture_start);
+                $lectureEndDate = Carbon::createFromFormat('Y-m-d H:i:s', $this->lecture_end);
+                $now = Carbon::now();
+
+                if ($now->lt($lectureStartDate)) {
+                    return Lecture::WAITING_STATUS;
+                }
+                if ($now->gt($lectureEndDate)) {
+                    return Lecture::ENDED_STATUS;
+                }
+
+                return Lecture::STARTED_STATUS;
+            },
+        );
+    }
 
     public function conference()
     {
