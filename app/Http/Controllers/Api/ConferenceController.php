@@ -27,6 +27,8 @@ use App\Services\CategoryService;
 use App\Jobs\Email\SendListenerJoinedEmails;
 use App\Jobs\Email\SendAdminDeletedConferenceEmails;
 
+use Carbon\Carbon;
+
 class ConferenceController extends Controller
 {
     use ApiResponseHelpers;
@@ -42,7 +44,9 @@ class ConferenceController extends Controller
 
     public function index(ConferenceIndex $request): JsonResponse
     {
+        $now = Carbon::now()->format('Y-m-d H:i:s');
         $conferences = Conference::with('country')
+            ->whereRaw('ADDTIME(`conferences`.`date`, `conferences`.`day_end`) >= ?', $now)
             ->when($request->get('from_date'), function(Builder $query, $fromDate) {
                 $query->whereDate('date', '>=', $fromDate);
             })
