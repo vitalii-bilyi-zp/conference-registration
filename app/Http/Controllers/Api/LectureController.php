@@ -21,6 +21,7 @@ use App\Models\User;
 use F9Web\ApiResponseHelpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 
 use App\Services\LectureService;
 use App\Services\CategoryService;
@@ -112,6 +113,7 @@ class LectureController extends Controller
             }
 
             $zoomMeetingId = $zoomMeeting['id'];
+            Cache::forget(config('cache.keys.zoom_meetings'));
         }
 
         Lecture::create([
@@ -174,6 +176,7 @@ class LectureController extends Controller
             ];
 
             $this->zoomService->updateMeeting($lecture->zoom_meeting_id, $data);
+            Cache::forget(config('cache.keys.zoom_meetings'));
         }
 
         $lecture->update([
@@ -200,6 +203,7 @@ class LectureController extends Controller
 
         if (isset($lecture->zoom_meeting_id)) {
             $this->zoomService->deleteMeeting($lecture->zoom_meeting_id);
+            Cache::forget(config('cache.keys.zoom_meetings'));
         }
 
         $lectureUser = $lecture->user;

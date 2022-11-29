@@ -107,4 +107,13 @@ return [
 
     'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_cache_'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cache Keys
+    |--------------------------------------------------------------------------
+    */
+
+    'keys' => [
+        'zoom_meetings' => env('ZOOM_MEETINGS_CACHE_KEY', 'zoom_meetings'),
+    ],
 ];
