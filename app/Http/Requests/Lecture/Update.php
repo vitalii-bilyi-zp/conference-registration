@@ -38,8 +38,8 @@ class Update extends FormRequest
         return [
             'title' => 'nullable|string|min:2|max:255',
             'description' => 'nullable|string|max:1000',
-            'lecture_start' => 'required_with:lecture_end|date_format:Y-m-d H:i:s|before:lecture_end',
-            'lecture_end' => 'required_with:lecture_start|date_format:Y-m-d H:i:s',
+            'lecture_start' => 'required_with:lecture_end|date_format:Y-m-d H:i:s|after_or_equal:now',
+            'lecture_end' => 'required_with:lecture_start|date_format:Y-m-d H:i:s|after:lecture_start',
             'presentation' => 'nullable|file|mimes:ppt,pptx|max:10000',
             'category_id' => 'nullable|integer|exists:categories,id',
         ];

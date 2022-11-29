@@ -126,7 +126,7 @@ class LectureController extends Controller
             'conference_id' => $request->conference_id,
             'user_id' => $user->id,
             'category_id' => $request->category_id,
-            'is_online' => $request->is_online,
+            'is_online' => $request->is_online ?? 0,
             'zoom_meeting_id' => $zoomMeetingId,
         ]);
 
