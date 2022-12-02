@@ -27,7 +27,7 @@ class ConferenceFactory extends Factory
 
         return [
             'title' => 'Conference ' . fake()->word(),
-            'date' => fake()->date('Y-m-d'),
+            'date' => date_format(fake()->dateTimeBetween('now', '+1 years'), 'Y-m-d'),
             'latitude' => fake()->latitude(),
             'longitude' => fake()->longitude(),
             'country_id' => Country::inRandomOrder()->first()->id,
