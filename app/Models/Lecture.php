@@ -61,6 +61,7 @@ class Lecture extends Model
     protected $casts = [
         'lecture_start' => 'datetime',
         'lecture_end' => 'datetime',
+        'is_online' => 'boolean',
     ];
 
     /**
